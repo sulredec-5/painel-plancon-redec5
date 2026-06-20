@@ -154,33 +154,49 @@
   /* ── Seção de qualidade (matriz + drill-down) ───────────────────────── */
 
   .quality-wrap{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:18px;}
-  .quality-scroll{overflow-x:auto;}
-  table.quality-matrix{width:100%;table-layout:fixed;border-collapse:collapse;}
+  .quality-scroll{overflow-x:visible;}
+  table.quality-matrix{width:100%;border-collapse:collapse;table-layout:fixed;min-width:0;}
   table.quality-matrix thead th{position:sticky;top:0;background:#F6F7F9;z-index:1;}
-  table.quality-matrix th.crit-col{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.01em;text-transform:none;color:var(--muted);text-align:center;padding:8px 3px;border-left:1px solid #E7E9ED;cursor:default;line-height:1.25;white-space:normal;word-break:break-word;}
-  table.quality-matrix th.crit-col .crit-num{display:block;font-weight:700;color:var(--ink);font-size:11px;margin-bottom:2px;}
-  table.quality-matrix th.mun-col{width:19%;}
+  table.quality-matrix th.crit-col{font-family:"IBM Plex Sans",sans-serif;font-size:10px;letter-spacing:0;text-transform:none;color:var(--muted);text-align:center;padding:8px 4px;border-left:1px solid #E7E9ED;cursor:default;width:calc((100% - 145px)/8);line-height:1.12;white-space:normal;word-break:normal;overflow-wrap:anywhere;hyphens:auto;vertical-align:bottom;}
+  table.quality-matrix th.crit-col .crit-num{display:block;font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--ink);font-size:11px;margin-bottom:3px;}
+  table.quality-matrix th.crit-col .crit-label{display:block;max-width:88px;margin:0 auto;}
+  table.quality-matrix th.mun-col{width:145px;min-width:145px;}
   table.quality-matrix td{padding:0;border-bottom:1px solid #E7E9ED;vertical-align:middle;}
   table.quality-matrix tr:last-child td{border-bottom:none;}
-  table.quality-matrix td.mun-name{padding:12px 10px;font-weight:600;font-size:13px;cursor:pointer;}
+  table.quality-matrix td.mun-name{padding:10px 10px;font-weight:600;font-size:12.5px;white-space:normal;line-height:1.18;cursor:pointer;}
   table.quality-matrix td.mun-name:hover{color:var(--accent);}
-  table.quality-matrix td.mun-name .mun-sub{display:block;font-weight:400;font-size:10.5px;color:var(--muted);margin-top:1px;white-space:normal;}
+  table.quality-matrix td.mun-name .mun-sub{display:block;font-weight:400;font-size:10px;line-height:1.25;color:var(--muted);margin-top:2px;}
   table.quality-matrix tr:hover td{background:#FAFBFC;}
 
-  .cell-btn{width:100%;height:46px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-left:1px solid #E7E9ED;transition:filter .1s;}
+  .cell-btn{width:100%;height:42px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-left:1px solid #E7E9ED;transition:filter .1s;}
   .cell-btn:hover{filter:brightness(.94);}
   .cell-btn:focus-visible{outline:2px solid var(--ink);outline-offset:-2px;}
-  .cell-num{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700;}
+  .cell-icon{font-family:"IBM Plex Sans",sans-serif;font-size:18px;font-weight:800;line-height:1;}
   .cell-btn.ok{background:var(--green-bg);}
-  .cell-btn.ok .cell-num{color:var(--green);}
+  .cell-btn.ok .cell-icon{color:var(--green);}
   .cell-btn.warn{background:var(--amber-bg);}
-  .cell-btn.warn .cell-num{color:var(--amber);}
+  .cell-btn.warn .cell-icon{color:var(--amber);}
   .cell-btn.bad{background:var(--red-bg);}
-  .cell-btn.bad .cell-num{color:var(--red);}
+  .cell-btn.bad .cell-icon{color:var(--red);}
   .cell-btn.pending{background:#F0F2F5;}
-  .cell-btn.pending .cell-num{color:#9AA4B2;font-weight:500;}
+  .cell-btn.pending .cell-icon{color:#8B95A5;font-weight:700;}
+
+  @media(max-width:720px){
+    table.quality-matrix{font-size:11px;}
+    table.quality-matrix th.mun-col{width:120px;min-width:120px;}
+    table.quality-matrix th.crit-col{width:calc((100% - 120px)/8);font-size:9px;padding:7px 2px;}
+    table.quality-matrix th.crit-col .crit-label{max-width:54px;}
+    table.quality-matrix td.mun-name{font-size:11.5px;padding:9px 7px;}
+    .cell-btn{height:38px;}
+    .cell-icon{font-size:16px;}
+  }
 
   .quality-legend{display:flex;flex-wrap:wrap;gap:16px;padding:12px 16px;border-top:1px solid var(--line);background:#FAFBFC;font-size:12px;color:var(--muted);}
+  .legend-status-icon{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-right:5px;font-family:"IBM Plex Sans",sans-serif;font-size:15px;font-weight:800;line-height:1;vertical-align:-2px;}
+  .legend-status-icon.ok{color:var(--green);}
+  .legend-status-icon.warn{color:var(--amber);}
+  .legend-status-icon.bad{color:var(--red);}
+  .legend-status-icon.pending{color:#8B95A5;}
 
   .crit-list{font-size:12px;color:var(--muted);margin:0 0 18px;line-height:1.7;columns:2;column-gap:28px;padding-left:18px;}
   .crit-list b{color:var(--ink);}
@@ -215,6 +231,94 @@
   .dd-pending{padding:30px 22px;text-align:center;color:var(--muted);font-size:13.5px;}
   .dd-pending b{color:var(--ink);}
 
+
+  /* ── Comparativo entre versões ─────────────────────────────────────── */
+  .compare-open-btn{
+    display:flex;align-items:center;gap:7px;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.04em;
+    background:transparent;color:rgba(255,255,255,0.78);border:1.5px solid rgba(255,255,255,0.35);border-radius:4px;
+    padding:6px 13px;cursor:pointer;transition:all .15s;white-space:nowrap;
+  }
+  .compare-open-btn:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,0.08);}
+  .compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  .compare-card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;}
+  .compare-card .num{font-family:"Source Serif 4",serif;font-size:28px;font-weight:600;line-height:1;}
+  .compare-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
+  .compare-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;align-items:end;}
+  .compare-field label{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+  .compare-field select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:13px;}
+  .compare-note{font-size:13px;color:var(--muted);line-height:1.55;background:#FAFBFC;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:5px;padding:10px 12px;margin-bottom:16px;}
+  .compare-table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-bottom:18px;}
+  table.compare-table{min-width:760px;border:none;border-radius:0;}
+  table.compare-table thead th{cursor:default;}
+  table.compare-table td{font-size:13px;}
+  .compare-status{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;padding:4px 8px;border-radius:20px;white-space:nowrap;display:inline-block;}
+  .compare-status.ready{background:var(--green-bg);color:var(--green);}
+  .compare-status.wait{background:var(--amber-bg);color:var(--amber);}
+  .compare-status.none{background:#F0F2F5;color:var(--muted);}
+  .evo{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;white-space:nowrap;}
+  .evo.up{color:var(--green);}.evo.flat{color:var(--muted);}.evo.down{color:var(--red);}.evo.na{color:#9AA4B2;}
+  .compare-cell{white-space:nowrap;}
+  .compare-cell .before,.compare-cell .after{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;}
+  @media(max-width:720px){.compare-grid,.compare-controls{grid-template-columns:1fr;}}
+
+  /* ── Área interna de upload/triagem ───────────────────────────────── */
+  .internal-open-btn{
+    display:flex;align-items:center;gap:7px;
+    font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.04em;
+    background:transparent;color:rgba(255,255,255,0.78);border:1.5px solid rgba(255,255,255,0.35);border-radius:4px;
+    padding:6px 13px;cursor:pointer;transition:all .15s;white-space:nowrap;
+  }
+  .internal-open-btn:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,0.08);}
+  .upload-note{font-size:13px;color:var(--muted);line-height:1.55;background:#FAFBFC;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:5px;padding:10px 12px;margin-bottom:16px;}
+  .upload-note strong{color:var(--ink);} .drive-config-badge{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:3px 8px;margin-left:6px;background:#fff;color:var(--muted);} .upload-inline-hint{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.45;} .upload-field .row-mini{display:grid;grid-template-columns:1fr auto;gap:8px;}
+  .upload-login{display:grid;grid-template-columns:1fr auto;gap:10px;margin:12px 0 16px;max-width:520px;}
+  .upload-login input,.upload-form input,.upload-form select,.upload-form textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:5px;background:#fff;color:var(--ink);font-family:"IBM Plex Sans",sans-serif;font-size:13px;}
+  .upload-login button,.upload-action-btn{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.04em;border-radius:5px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;padding:9px 13px;cursor:pointer;}
+  .upload-login button:hover,.upload-action-btn:hover{filter:brightness(1.1);}
+  .upload-form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .upload-field label{display:block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+  .upload-field.full{grid-column:1/-1;}
+  .upload-form textarea{min-height:72px;resize:vertical;}
+  .upload-actions{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px;}
+  .upload-action-btn.secondary{background:#fff;color:var(--ink);}
+  .upload-action-btn.danger{background:#fff;color:var(--red);border-color:var(--red);}
+  .upload-locked,.upload-unlocked{display:none;}
+  .upload-locked.active,.upload-unlocked.active{display:block;}
+  .upload-error{font-size:12.5px;color:var(--red);margin-top:-6px;display:none;}
+  .upload-error.show{display:block;}
+  .upload-table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:12px;}
+  table.upload-table{min-width:760px;border:none;border-radius:0;}
+  table.upload-table thead th{cursor:default;}
+  table.upload-table td{font-size:13px;}
+  .upload-chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;padding:4px 8px;border-radius:20px;background:var(--amber-bg);color:var(--amber);white-space:nowrap;}
+
+  .internal-section-title{font-family:"Source Serif 4",serif;font-size:20px;margin:24px 0 8px;color:var(--ink);}
+  .analysis-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0;}
+  .analysis-tab{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.04em;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:5px;padding:8px 10px;cursor:pointer;}
+  .analysis-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .analysis-panel{display:none;}
+  .analysis-panel.active{display:block;}
+  .analysis-criteria{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+  .analysis-criterion{border:1px solid var(--line);border-radius:6px;background:#fff;padding:12px;}
+  .analysis-criterion-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+  .analysis-criterion-title{font-weight:700;color:var(--ink);font-size:13px;line-height:1.3;}
+  .analysis-criterion .crit-status-select{max-width:220px;}
+  .analysis-criterion-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .analysis-criterion-grid textarea{min-height:66px;}
+  .analysis-json-box{min-height:260px;font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.5;}
+  .analysis-prompt-box{min-height:240px;font-family:"IBM Plex Mono",monospace;font-size:12px;line-height:1.5;background:#fff;}
+  .analysis-prompt-wrap{margin:12px 0 14px;}
+  .analysis-table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:6px;margin-top:12px;}
+  table.analysis-table{min-width:820px;border:none;border-radius:0;}
+  table.analysis-table thead th{cursor:default;}
+  table.analysis-table td{font-size:13px;}
+  .analysis-chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;padding:4px 8px;border-radius:20px;background:var(--green-bg);color:var(--green);white-space:nowrap;}
+  @media(max-width:900px){.analysis-criterion-grid{grid-template-columns:1fr;}}
+
+  @media(max-width:720px){.upload-login,.upload-form{grid-template-columns:1fr;}.upload-field.full{grid-column:auto;}}
+
+
   @media(max-width:720px){
     .stats{grid-template-columns:repeat(2,1fr);}
     .viz-row{grid-template-columns:1fr;}
@@ -236,7 +340,7 @@
     <div class="top-text">
       <p class="eyebrow">REDEC 5 - Sul I · Defesa Civil</p>
       <h1>Painel de Planos de Contingência</h1>
-      <p class="sub">Sincronizado manualmente em <b>19/06/2026</b> · fonte: pasta <b>PLANCON 2026 / REDEC 5</b> no Google Drive</p>
+      <p class="sub">Sincronizado manualmente em <b>19/06/2026</b> · fonte: pasta <b>03 - PLANCON REDEC 5 SUL I - ORIGINAIS</b> no Google Drive</p>
     </div>
     <div class="year-selector">
       <span class="year-selector-label">Ano de referência</span>
@@ -248,6 +352,8 @@
         Ver análise
         <span class="quality-open-meta" id="qualityOpenMeta"></span>
       </button>
+      <button class="compare-open-btn" id="compareOpenBtn">Comparar versões</button>
+      <button class="internal-open-btn" id="internalOpenBtn">Área interna</button>
     </div>
   </div>
 </header>
@@ -294,9 +400,10 @@
 
   <footer>
     <hr>
-    <p><b>Como isto é atualizado:</b> este painel não se conecta ao Drive automaticamente. Quando novos PDFs forem enviados pelos municípios, a equipe da REDEC 5 Sul I providenciará uma nova versão desta página.</p>
+    <p><b>Como isto é atualizado:</b> a área interna permite registrar novos arquivos enviados pelos municípios para triagem. Em modo estático, o registro fica no navegador e precisa ser exportado; para upload real em produção, integrar com um backend autorizado, como Google Drive, Supabase ou servidor institucional.</p>
     <p>Critério de "atualizado": o município tem pelo menos um documento na pasta do REDEC 5 do ano atual (2026) <b>ou</b> do ano anterior (2025) — já que os planos têm validade de um ano, isso garante que sempre exista uma versão vigente. Só entra como "não entregue" quem não tem nenhum documento em nenhuma das duas pastas.</p>
     <p><b>Sobre a qualidade do conteúdo:</b> avaliação manual feita a partir da leitura integral de cada PLANCON frente a 8 critérios de conteúdo mínimo (definidos pela REDEC). Município sem análise ainda aparece como "Pendente de análise" na matriz — a coluna vai sendo preenchida conforme os PDFs são lidos.</p>
+    <p><b>Sobre o comparativo:</b> cada município possui histórico próprio de versões. A comparação antes/depois só é exibida quando o mesmo município tiver duas ou mais análises; os demais permanecem como "aguardando nova versão" ou "sem documento recebido".</p>
   </footer>
 
   <!-- ===================== MODAL: QUALIDADE DOS PLANOS ===================== -->
@@ -322,10 +429,10 @@
             </table>
           </div>
           <div class="quality-legend">
-            <span><b style="color:var(--green)">3</b> Atende totalmente</span>
-            <span><b style="color:var(--amber)">2</b> Atende parcialmente</span>
-            <span><b style="color:var(--red)">1</b> Não atende</span>
-            <span><b style="color:#9AA4B2">—</b> Pendente de análise</span>
+            <span><b class="legend-status-icon ok">✓</b> Atende totalmente</span>
+            <span><b class="legend-status-icon warn">!</b> Atende parcialmente</span>
+            <span><b class="legend-status-icon bad">✕</b> Não atende</span>
+            <span><b class="legend-status-icon pending">—</b> Pendente de análise</span>
           </div>
         </div>
 
@@ -333,6 +440,264 @@
       </div>
     </div>
   </div>
+
+  <!-- ===================== MODAL: COMPARATIVO ENTRE VERSÕES ===================== -->
+  <div class="quality-modal-backdrop" id="compareModalBackdrop">
+    <div class="quality-modal" role="dialog" aria-modal="true" aria-labelledby="compareModalTitle">
+      <div class="quality-modal-header">
+        <div>
+          <h2 id="compareModalTitle">Comparativo entre versões</h2>
+          <p class="section-desc">Comparação individual por município. Municípios sem nova versão não entram no cálculo de evolução.</p>
+        </div>
+        <button class="quality-modal-close" id="compareModalClose" aria-label="Fechar">✕</button>
+      </div>
+      <div class="quality-modal-body">
+        <div class="compare-grid" id="compareCards"></div>
+        <div class="compare-note" id="compareNote"></div>
+        <div class="compare-controls">
+          <div class="compare-field">
+            <label for="compareMunicipio">Município</label>
+            <select id="compareMunicipio"></select>
+          </div>
+          <div class="compare-field">
+            <label for="compareBefore">Versão anterior</label>
+            <select id="compareBefore"></select>
+          </div>
+          <div class="compare-field">
+            <label for="compareAfter">Versão posterior</label>
+            <select id="compareAfter"></select>
+          </div>
+        </div>
+        <div id="compareDetail"></div>
+        <h3 style="font-family:'Source Serif 4',serif;font-size:20px;margin:18px 0 10px;">Situação por município</h3>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead><tr><th>Município</th><th>Situação</th><th>Versões disponíveis</th><th>Última análise</th></tr></thead>
+            <tbody id="compareMunicipioStatus"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ===================== MODAL: ÁREA INTERNA / UPLOAD ===================== -->
+  <div class="quality-modal-backdrop" id="internalModalBackdrop">
+    <div class="quality-modal" role="dialog" aria-modal="true" aria-labelledby="internalModalTitle">
+      <div class="quality-modal-header">
+        <div>
+          <h2 id="internalModalTitle">Área interna de registros</h2>
+          <p class="section-desc">Registro controlado de novos PLANCONs enviados individualmente pelos municípios.</p>
+        </div>
+        <button class="quality-modal-close" id="internalModalClose" aria-label="Fechar">✕</button>
+      </div>
+      <div class="quality-modal-body">
+        <div class="upload-locked active" id="uploadLocked">
+          <div class="upload-note"><strong>Acesso restrito ao time interno.</strong> Informe a senha para registrar novos arquivos. Esta proteção é adequada para controle visual em painel estático; segurança real exige autenticação no servidor.</div>
+          <div class="upload-login">
+            <input type="password" id="uploadPassword" placeholder="Senha de upload" autocomplete="current-password">
+            <button id="uploadLoginBtn">Entrar</button>
+          </div>
+          <div class="upload-error" id="uploadError">Senha inválida.</div>
+        </div>
+
+        <div class="upload-unlocked" id="uploadUnlocked">
+          <div class="upload-note"><strong>Registro institucional:</strong> registre novas versões de PLANCON mantendo o arquivo original na pasta oficial <strong>03 - PLANCON REDEC 5 SUL I - ORIGINAIS</strong> no Google Drive do trabalho. O painel salva os metadados na planilha-manifesto e classifica o envio como <strong>aguardando análise</strong> até a validação técnica.<span class="drive-config-badge">Manifesto institucional</span></div>
+          <div class="upload-form">
+            <div class="upload-field full integration-field">
+              <label for="appsScriptUrl">Integração Google Sheets / Apps Script</label>
+              <div class="row-mini">
+                <input type="url" id="appsScriptUrl" placeholder="Cole aqui a URL do Web App do Apps Script">
+                <button type="button" class="upload-action-btn secondary" id="saveAppsScriptConfigBtn">Salvar</button>
+                <button type="button" class="upload-action-btn secondary" id="syncManifestBtn">Sincronizar agora</button>
+              </div>
+              <input type="password" id="appsScriptToken" placeholder="Token opcional de integração" style="margin-top:8px">
+              <div class="upload-inline-hint" id="syncManifestStatus">Quando configurado, cada registro será salvo também na planilha-manifesto. Ao abrir o painel, as análises da planilha serão carregadas automaticamente.</div>
+            </div>
+            <div class="upload-field">
+              <label for="uploadMunicipio">Município</label>
+              <select id="uploadMunicipio"></select>
+            </div>
+            <div class="upload-field">
+              <label for="uploadLabel">Tipo de envio</label>
+              <select id="uploadLabel">
+                <option value="Nova versão pós-orientação">Nova versão pós-orientação</option>
+                <option value="Pós-IntegraCON">Pós-IntegraCON</option>
+                <option value="Correção pontual">Correção pontual</option>
+                <option value="Envio inicial tardio">Envio inicial tardio</option>
+              </select>
+            </div>
+            <div class="upload-field">
+              <label for="uploadDocDate">Data do documento</label>
+              <input type="date" id="uploadDocDate">
+            </div>
+            <div class="upload-field">
+              <label for="uploadFiles">Arquivos locais (uso excepcional)</label>
+              <input type="file" id="uploadFiles" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.html,.txt,application/pdf">
+              <div class="upload-inline-hint">Uso excepcional: utilize apenas quando o arquivo ainda não estiver disponível no Google Drive institucional.</div>
+            </div>
+            <div class="upload-field">
+              <label for="uploadDriveUrl">Arquivo no Google Drive</label>
+              <div class="row-mini">
+                <input type="url" id="uploadDriveUrl" placeholder="Cole o link do Drive ou use o seletor">
+                <button type="button" class="upload-action-btn secondary" id="drivePickerBtn">Drive</button>
+              </div>
+              <div class="upload-inline-hint">Recomendado para conta institucional: mantém o arquivo original no Drive.</div>
+            </div>
+            <div class="upload-field">
+              <label for="uploadDriveName">Nome do arquivo no Drive</label>
+              <input type="text" id="uploadDriveName" placeholder="Ex.: PLANCON Barra Mansa revisado 2026.pdf">
+            </div>
+            <div class="upload-field">
+              <label for="uploadResponsible">Responsável pelo registro</label>
+              <input type="text" id="uploadResponsible" placeholder="Nome ou e-mail institucional">
+            </div>
+            <div class="upload-field full">
+              <label for="uploadNotes">Observações</label>
+              <textarea id="uploadNotes" placeholder="Ex.: versão revisada após orientações; substituir diagnóstico anterior somente após análise técnica."></textarea>
+            </div>
+          </div>
+          <div class="upload-actions">
+            <button class="upload-action-btn" id="uploadRegisterBtn">Registrar envio</button>
+            <button class="upload-action-btn secondary" id="uploadExportBtn">Exportar manifesto JSON</button>
+            <button class="upload-action-btn danger" id="uploadClearBtn">Limpar registros locais</button>
+          </div>
+          <div class="upload-table-wrap">
+            <table class="upload-table">
+              <thead><tr><th>Data do registro</th><th>Município</th><th>Tipo</th><th>Arquivos</th><th>Status</th></tr></thead>
+              <tbody id="uploadQueueBody"></tbody>
+            </table>
+          </div>
+
+          <h3 class="internal-section-title">Inserir análise técnica</h3>
+          <div class="upload-note"><strong>Análise estruturada:</strong> após a equipe avaliar o PLANCON pelos 8 critérios, insira o resultado aqui por formulário guiado ou cole um JSON válido gerado/revisado pela equipe. O painel salvará a nova versão analisada, atualizará o histórico do município e liberará a comparação antes vs depois quando houver ao menos duas análises.</div>
+          <div class="analysis-prompt-wrap">
+            <label for="analysisAiPrompt">Prompt padrão para análise com IA</label>
+            <textarea id="analysisAiPrompt" class="analysis-prompt-box" readonly>Analise o PLANCON anexado ou disponibilizado pelo link do Google Drive pelos 8 critérios institucionais da REDEC 5 Sul I.
+
+Retorne exclusivamente um JSON válido, sem markdown, sem comentários e sem texto fora do JSON.
+
+Regras obrigatórias:
+1. Use apenas os status: ok, warn, bad ou pending.
+2. Não invente informação ausente no documento.
+3. Quando uma informação não for localizada, registre isso claramente na justificativa e use status bad ou warn, conforme o caso.
+4. Para cada critério, informe: status, justificativa, evidencia e recomendacao.
+5. A evidência deve citar página, seção, item, anexo ou trecho identificável do PLANCON sempre que possível.
+6. A recomendação deve orientar objetivamente como o município pode melhorar o PLANCON.
+7. O JSON precisa conter todos os critérios de c1 a c8.
+
+Critérios:
+c1 — Indicação das responsabilidades de cada órgão na gestão de desastres, especialmente preparação, resposta e recuperação.
+c2 — Definição dos sistemas de alerta a desastres, articulados ao monitoramento, com atenção aos radioamadores.
+c3 — Organização dos exercícios simulados com participação da população.
+c4 — Organização do atendimento emergencial à população, incluindo rotas de deslocamento, pontos seguros e pontos de abrigo.
+c5 — Definição das ações de atendimento médico-hospitalar e psicológico aos atingidos.
+c6 — Cadastramento das equipes técnicas e de voluntários para atuação em desastres.
+c7 — Localização dos centros de recebimento e estratégia de distribuição de doações e suprimentos.
+c8 — Registro/realização de exercícios simulados dos PLANCONs, indicando tipo de simulado e participação dos órgãos setoriais/secretarias.
+
+Formato obrigatório:
+{
+  "municipio": "NOME DO MUNICÍPIO",
+  "rotulo": "Pós-orientação",
+  "dataAnalise": "AAAA-MM-DD",
+  "documento": "NOME DO ARQUIVO ANALISADO",
+  "linkDrive": "LINK DO GOOGLE DRIVE, SE HOUVER",
+  "analista": "NOME OU E-MAIL DO ANALISTA",
+  "sintese": "Síntese técnica geral da análise, destacando avanços, lacunas e pontos críticos.",
+  "criterios": {
+    "c1": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c2": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c3": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c4": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c5": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c6": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c7": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."},
+    "c8": {"status": "ok|warn|bad|pending", "justificativa": "...", "evidencia": "...", "recomendacao": "..."}
+  }
+}</textarea>
+            <div class="upload-actions" style="margin-top:10px;">
+              <button class="upload-action-btn secondary" id="analysisCopyPromptBtn">Copiar prompt para IA</button>
+            </div>
+            <div class="upload-inline-hint">Use este prompt em uma IA externa ou interna. Depois revise o resultado e cole o JSON na aba <strong>Importar JSON</strong>.</div>
+          </div>
+          <div class="analysis-tabs">
+            <button type="button" class="analysis-tab active" data-analysis-tab="form">Formulário guiado</button>
+            <button type="button" class="analysis-tab" data-analysis-tab="json">Importar JSON</button>
+          </div>
+
+          <div class="analysis-panel active" id="analysisPanelForm">
+            <div class="upload-form">
+              <div class="upload-field">
+                <label for="analysisMunicipio">Município</label>
+                <select id="analysisMunicipio"></select>
+              </div>
+              <div class="upload-field">
+                <label for="analysisLabel">Versão da análise</label>
+                <select id="analysisLabel">
+                  <option value="Pós-orientação">Pós-orientação</option>
+                  <option value="Pós-IntegraCON">Pós-IntegraCON</option>
+                  <option value="Revisão anual">Revisão anual</option>
+                  <option value="Complementação analisada">Complementação analisada</option>
+                  <option value="Diagnóstico inicial tardio">Diagnóstico inicial tardio</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+              <div class="upload-field">
+                <label for="analysisDate">Data da análise</label>
+                <input type="date" id="analysisDate">
+              </div>
+              <div class="upload-field">
+                <label for="analysisDocument">Documento analisado</label>
+                <input type="text" id="analysisDocument" placeholder="Ex.: PLANCON Barra Mansa Rev. 03 - 2026.pdf">
+              </div>
+              <div class="upload-field">
+                <label for="analysisDriveUrl">Link do Drive</label>
+                <input type="url" id="analysisDriveUrl" placeholder="Cole o link do arquivo analisado no Drive">
+              </div>
+              <div class="upload-field">
+                <label for="analysisAnalyst">Analista responsável</label>
+                <input type="text" id="analysisAnalyst" placeholder="Nome ou e-mail institucional">
+              </div>
+              <div class="upload-field full">
+                <label for="analysisSummary">Síntese técnica</label>
+                <textarea id="analysisSummary" placeholder="Resumo geral da qualidade do plano e das principais evoluções/lacunas."></textarea>
+              </div>
+            </div>
+            <div class="analysis-criteria" id="analysisCriteriaFields"></div>
+            <div class="upload-actions" style="margin-top:14px;">
+              <button class="upload-action-btn" id="analysisRegisterBtn">Registrar análise</button>
+              <button class="upload-action-btn secondary" id="analysisClearFormBtn">Limpar formulário</button>
+            </div>
+          </div>
+
+          <div class="analysis-panel" id="analysisPanelJson">
+            <div class="upload-field full">
+              <label for="analysisJsonInput">JSON da análise</label>
+              <textarea id="analysisJsonInput" class="analysis-json-box" placeholder='Cole aqui um JSON válido com municipio, rotulo, dataAnalise, documento, linkDrive, analista, sintese e criterios c1..c8.'></textarea>
+              <div class="upload-inline-hint">Use status apenas entre: <strong>ok</strong>, <strong>warn</strong>, <strong>bad</strong> ou <strong>pending</strong>. O painel valida se os 8 critérios foram informados.</div>
+            </div>
+            <div class="upload-actions" style="margin-top:12px;">
+              <button class="upload-action-btn" id="analysisImportJsonBtn">Importar análise JSON</button>
+              <button class="upload-action-btn secondary" id="analysisTemplateBtn">Copiar modelo JSON</button>
+            </div>
+          </div>
+
+          <div class="upload-actions">
+            <button class="upload-action-btn secondary" id="analysisExportBtn">Exportar análises JSON</button>
+            <button class="upload-action-btn danger" id="analysisClearBtn">Limpar análises locais</button>
+          </div>
+          <div class="analysis-table-wrap">
+            <table class="analysis-table">
+              <thead><tr><th>Data da análise</th><th>Município</th><th>Versão</th><th>Documento</th><th>Status</th></tr></thead>
+              <tbody id="analysisQueueBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -1005,12 +1370,51 @@ const QUALITY_DATA = {
 };
 
 /* ============================================================================
+   HISTÓRICO DE VERSÕES — base para comparação antes/depois por município
+   ============================================================================
+   A análise atual foi congelada como baseline. Futuras versões devem ser
+   adicionadas no array do respectivo município, sem apagar a versão anterior.
+   Municípios com apenas 1 versão aparecem como "aguardando nova versão".
+   Municípios sem documento permanecem sem histórico.
+   ============================================================================ */
+const QUALITY_HISTORY = Object.fromEntries(
+  Object.entries(QUALITY_DATA).map(([municipio, data]) => [municipio, [{
+    id: "baseline_2026_06_19",
+    rotulo: "Diagnóstico inicial",
+    dataAnalise: data.analisadoEm,
+    documento: data.fonte,
+    criterios: data.criterios
+  }]])
+);
+
+/* ============================================================================
    LÓGICA — ENTREGA (mapa / donut / tabela / seletor de ano)
    ============================================================================ */
 const STATUS_LABEL = {ok:"Atualizado", warn:"Verificar", bad:"Não entregue"};
 const STATUS_FILL  = {ok:"#6EC49A",    warn:"#F5C07A",   bad:"#E8807C"};
 const STATUS_COLOR = {ok:"#1F7A4D",    warn:"#B5650A",   bad:"#B0241D"};
 const QSTATUS_LABEL = {ok:"Atende totalmente", warn:"Atende parcialmente", bad:"Não atende", pending:"Pendente de análise"};
+const QSTATUS_ICON = {ok:"✓", warn:"!", bad:"✕", pending:"—"};
+const QSTATUS_SCORE = {bad:0, warn:1, ok:2};
+function municipioVersions(municipio){ return QUALITY_HISTORY[municipio] || []; }
+function latestQualityVersion(municipio){ const v = municipioVersions(municipio); return v.length ? v[v.length-1] : null; }
+function latestQualityData(municipio){
+  const v = latestQualityVersion(municipio);
+  if(!v) return null;
+  return {analisadoEm:v.dataAnalise, fonte:v.documento, criterios:v.criterios, versaoAnalise:v.id, rotulo:v.rotulo};
+}
+function compareDelta(beforeStatus, afterStatus){
+  if(!(beforeStatus in QSTATUS_SCORE) || !(afterStatus in QSTATUS_SCORE)) return null;
+  return QSTATUS_SCORE[afterStatus] - QSTATUS_SCORE[beforeStatus];
+}
+function evolutionLabel(delta){
+  if(delta === null) return {symbol:"—", cls:"na", text:"Sem base comparável"};
+  if(delta >= 2) return {symbol:"↑↑", cls:"up", text:"Evolução forte"};
+  if(delta === 1) return {symbol:"↑", cls:"up", text:"Evolução"};
+  if(delta === 0) return {symbol:"→", cls:"flat", text:"Sem alteração"};
+  if(delta === -1) return {symbol:"↓", cls:"down", text:"Regressão"};
+  return {symbol:"↓↓", cls:"down", text:"Regressão forte"};
+}
 
 const ANOS = [...new Set(ALL_DATA.map(d=>d.ano))].sort((a,b)=>b-a);
 let anoAtivo = ANOS[0];
@@ -1271,13 +1675,13 @@ function buildYearBtns(){
    LÓGICA — QUALIDADE DO CONTEÚDO (matriz + drill-down)
    ============================================================================ */
 function qualityStatusFor(municipio, critId){
-  const m = QUALITY_DATA[municipio];
+  const m = latestQualityData(municipio);
   if(!m || !m.criterios[critId]) return "pending";
   return m.criterios[critId].status;
 }
 
 function municipioQualitySummary(municipio){
-  const m = QUALITY_DATA[municipio];
+  const m = latestQualityData(municipio);
   if(!m) return null;
   const counts = {ok:0, warn:0, bad:0};
   QUALITY_CRITERIA.forEach(c=>{
@@ -1318,7 +1722,7 @@ function renderCritList(){
 }
 
 function renderQualityMeta(){
-  const analisados = REDEC.filter(m=>QUALITY_DATA[m]).length;
+  const analisados = REDEC.filter(m=>latestQualityData(m)).length;
   const txt = `${analisados} de ${REDEC.length} municípios analisados`;
   document.getElementById("qualityMeta").textContent = txt;
   const metaEl = document.getElementById("qualityOpenMeta");
@@ -1326,11 +1730,9 @@ function renderQualityMeta(){
 }
 
 function renderQualityMatrix(){
-  const STATUS_NUM = {bad:1, warn:2, ok:3, pending:"—"};
-
   const headRow = document.getElementById("qualityHeadRow");
   headRow.innerHTML = `<th class="mun-col">Município</th>` +
-    QUALITY_CRITERIA.map(c=>`<th class="crit-col" title="${c.full}"><span class="crit-num">${c.id}</span>${c.short}</th>`).join("");
+    QUALITY_CRITERIA.map(c=>`<th class="crit-col" title="${c.full}"><span class="crit-num">C${c.id}</span><span class="crit-label">${c.short}</span></th>`).join("");
 
   const body = document.getElementById("qualityBody");
   body.innerHTML = REDEC.map(municipio=>{
@@ -1341,7 +1743,7 @@ function renderQualityMatrix(){
     const cells = QUALITY_CRITERIA.map(c=>{
       const st = qualityStatusFor(municipio, c.id);
       const cls = st==="pending" ? "pending" : st;
-      return `<td><button class="cell-btn ${cls}" data-mun="${municipio}" data-crit="${c.id}" aria-label="${municipio} — critério ${c.id}: ${QSTATUS_LABEL[st]}"><span class="cell-num">${STATUS_NUM[st]}</span></button></td>`;
+      return `<td><button class="cell-btn ${cls}" data-mun="${municipio}" data-crit="${c.id}" aria-label="${municipio} — critério ${c.id}: ${QSTATUS_LABEL[st]}"><span class="cell-icon" aria-hidden="true">${QSTATUS_ICON[st] || "—"}</span></button></td>`;
     }).join("");
     return `
       <tr>
@@ -1361,7 +1763,7 @@ function renderQualityMatrix(){
 
 function openDrilldown(municipio, focusCritId){
   const panel = document.getElementById("drilldown");
-  const data = QUALITY_DATA[municipio];
+  const data = latestQualityData(municipio);
 
   if(!data){
     panel.innerHTML = `
@@ -1456,9 +1858,740 @@ document.addEventListener("click", (e)=>{
   if(btn) openQualityModal(btn.dataset.qualityMun);
 });
 
+
+/* ============================================================================
+   LÓGICA — COMPARATIVO ENTRE VERSÕES
+   ============================================================================ */
+function compareStatusForMunicipio(municipio){
+  const versions = municipioVersions(municipio);
+  if(versions.length >= 2) return {cls:"ready", label:"Comparável", detail:`${versions.length} versões`};
+  if(versions.length === 1) return {cls:"wait", label:"Aguardando nova versão", detail:"1 versão"};
+  return {cls:"none", label:"Sem documento recebido", detail:"0 versões"};
+}
+
+function renderCompareCards(){
+  const ready = REDEC.filter(m=>municipioVersions(m).length >= 2).length;
+  const wait = REDEC.filter(m=>municipioVersions(m).length === 1).length;
+  const none = REDEC.filter(m=>municipioVersions(m).length === 0).length;
+  document.getElementById("compareCards").innerHTML = `
+    <div class="compare-card"><div class="num">${ready}</div><div class="label">municípios comparáveis</div></div>
+    <div class="compare-card"><div class="num">${wait}</div><div class="label">aguardando nova versão</div></div>
+    <div class="compare-card"><div class="num">${none}</div><div class="label">sem documento inicial</div></div>
+  `;
+  document.getElementById("compareNote").innerHTML = ready
+    ? `O resumo de evolução considera apenas os <b>${ready}</b> município(s) com duas ou mais versões analisadas. Os demais ficam fora do cálculo para não distorcer o impacto da rodada de orientações.`
+    : `Ainda não há municípios com duas versões analisadas. A análise atual foi preservada como <b>Diagnóstico inicial</b>. Quando um município enviar uma versão revisada, ele passará automaticamente para a situação <b>Comparável</b>.`;
+}
+
+function renderCompareMunicipioStatus(){
+  const tbody = document.getElementById("compareMunicipioStatus");
+  tbody.innerHTML = REDEC.map(m=>{
+    const versions = municipioVersions(m);
+    const status = compareStatusForMunicipio(m);
+    const latest = versions.length ? versions[versions.length-1] : null;
+    return `<tr>
+      <td class="municipio-cell">${m}</td>
+      <td><span class="compare-status ${status.cls}">${status.label}</span></td>
+      <td>${status.detail}</td>
+      <td>${latest ? `${latest.rotulo} · ${latest.dataAnalise}` : "—"}</td>
+    </tr>`;
+  }).join("");
+}
+
+function populateCompareSelectors(selectedMunicipio){
+  const munSel = document.getElementById("compareMunicipio");
+  if(!munSel.options.length){
+    munSel.innerHTML = REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
+  }
+  if(selectedMunicipio) munSel.value = selectedMunicipio;
+  const versions = municipioVersions(munSel.value);
+  const opts = versions.map((v,i)=>`<option value="${i}">${v.rotulo} — ${v.dataAnalise}</option>`).join("");
+  const beforeSel = document.getElementById("compareBefore");
+  const afterSel = document.getElementById("compareAfter");
+  beforeSel.innerHTML = opts || `<option value="">Sem versão</option>`;
+  afterSel.innerHTML = opts || `<option value="">Sem versão</option>`;
+  beforeSel.disabled = versions.length < 2;
+  afterSel.disabled = versions.length < 2;
+  if(versions.length >= 2){ beforeSel.value = "0"; afterSel.value = String(versions.length-1); }
+  renderCompareDetail();
+}
+
+function renderCompareDetail(){
+  const municipio = document.getElementById("compareMunicipio").value;
+  const versions = municipioVersions(municipio);
+  const target = document.getElementById("compareDetail");
+
+  if(versions.length === 0){
+    target.innerHTML = `<div class="compare-note"><b>${municipio}</b>: sem documento recebido. Não há baseline nem versão posterior para comparação.</div>`;
+    return;
+  }
+  if(versions.length === 1){
+    const v = versions[0];
+    target.innerHTML = `<div class="compare-note"><b>${municipio}</b>: possui apenas a versão <b>${v.rotulo}</b>, analisada em ${v.dataAnalise}. Situação: aguardando nova versão para comparação.</div>`;
+    return;
+  }
+
+  const before = versions[+document.getElementById("compareBefore").value];
+  const after = versions[+document.getElementById("compareAfter").value];
+  if(!before || !after || before.id === after.id){
+    target.innerHTML = `<div class="compare-note">Selecione duas versões diferentes para comparar.</div>`;
+    return;
+  }
+
+  let improved=0, stable=0, regressed=0;
+  const rows = QUALITY_CRITERIA.map(c=>{
+    const b = before.criterios[c.id]?.status || "pending";
+    const a = after.criterios[c.id]?.status || "pending";
+    const delta = compareDelta(b,a);
+    const evo = evolutionLabel(delta);
+    if(delta > 0) improved++; else if(delta === 0) stable++; else if(delta < 0) regressed++;
+    return `<tr>
+      <td><b>C${c.id}</b> — ${c.short}</td>
+      <td class="compare-cell"><span class="before">${QSTATUS_ICON[b]} ${QSTATUS_LABEL[b]}</span> → <span class="after">${QSTATUS_ICON[a]} ${QSTATUS_LABEL[a]}</span></td>
+      <td><span class="evo ${evo.cls}" title="${evo.text}">${evo.symbol}</span></td>
+    </tr>`;
+  }).join("");
+
+  target.innerHTML = `
+    <div class="compare-note"><b>${municipio}</b>: ${before.rotulo} (${before.dataAnalise}) vs ${after.rotulo} (${after.dataAnalise}). Evoluções: <b>${improved}</b> · Estáveis: <b>${stable}</b> · Regressões: <b>${regressed}</b>.</div>
+    <div class="compare-table-wrap"><table class="compare-table">
+      <thead><tr><th>Critério</th><th>Antes → Depois</th><th>Evolução</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  `;
+}
+
+function openCompareModal(municipio){
+  document.getElementById("compareModalBackdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+  renderCompareCards();
+  renderCompareMunicipioStatus();
+  populateCompareSelectors(municipio || REDEC[0]);
+}
+function closeCompareModal(){
+  document.getElementById("compareModalBackdrop").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+const compareOpen = document.getElementById("compareOpenBtn");
+if(compareOpen) compareOpen.addEventListener("click", ()=>openCompareModal(null));
+document.getElementById("compareModalClose").addEventListener("click", closeCompareModal);
+document.getElementById("compareModalBackdrop").addEventListener("click", (e)=>{
+  if(e.target.id === "compareModalBackdrop") closeCompareModal();
+});
+document.getElementById("compareMunicipio").addEventListener("change", ()=>populateCompareSelectors());
+document.getElementById("compareBefore").addEventListener("change", renderCompareDetail);
+document.getElementById("compareAfter").addEventListener("change", renderCompareDetail);
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape" && document.getElementById("compareModalBackdrop").classList.contains("open")){
+    closeCompareModal();
+  }
+});
+
+
+/* ============================================================================
+   ÁREA INTERNA / UPLOAD LOCAL
+   ============================================================================ */
+const UPLOAD_PASSWORD_HASH = "827682e07a5209e523ec39157e2b2bbf6bd5181a6a62e29de4302634892c33b0"; // senha inicial: REDEC5@2026
+const UPLOAD_STORAGE_KEY = "redec5_plancon_upload_queue_v2";
+const APPS_SCRIPT_CONFIG_KEY = "redec5_plancon_apps_script_config_v1";
+const ANALYSIS_STORAGE_KEY = "redec5_plancon_analysis_history_v1";
+const GOOGLE_DRIVE_CONFIG = {
+  enabled: false,
+  clientId: "",   // preencher quando o OAuth do Google Workspace estiver configurado
+  apiKey: "",     // preencher quando o Google Picker estiver configurado
+  allowedDomains: [], // ex.: ["defesacivil.rj.gov.br"]
+  folderId: ""    // pasta institucional dos PLANCONs, opcional
+};
+
+function getAppsScriptConfig(){
+  try{
+    const cfg = JSON.parse(localStorage.getItem(APPS_SCRIPT_CONFIG_KEY) || "{}");
+    return {url: (cfg.url || "").trim(), token: (cfg.token || "").trim()};
+  }catch(e){
+    return {url:"", token:""};
+  }
+}
+function setAppsScriptConfig(cfg){
+  localStorage.setItem(APPS_SCRIPT_CONFIG_KEY, JSON.stringify({url:(cfg.url||"").trim(), token:(cfg.token||"").trim()}));
+}
+function setSyncStatus(msg){
+  const el = document.getElementById("syncManifestStatus");
+  if(el) el.textContent = msg;
+}
+function jsonpRequest(url){
+  return new Promise((resolve, reject)=>{
+    const cb = "__planconManifestCb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+    const sep = url.includes("?") ? "&" : "?";
+    const script = document.createElement("script");
+    const cleanup = ()=>{
+      try{ delete window[cb]; }catch(e){ window[cb] = undefined; }
+      script.remove();
+    };
+    window[cb] = (data)=>{ cleanup(); resolve(data); };
+    script.onerror = ()=>{ cleanup(); reject(new Error("Não foi possível carregar a planilha-manifesto.")); };
+    script.src = url + sep + "action=export&callback=" + encodeURIComponent(cb);
+    document.head.appendChild(script);
+  });
+}
+function mergeById(localItems, incomingItems){
+  const map = new Map();
+  (localItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, item); });
+  (incomingItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, {...map.get(item.id), ...item, syncStatus:item.syncStatus || "carregada da planilha"}); });
+  return Array.from(map.values()).sort((a,b)=>String(a.dataAnalise||"").localeCompare(String(b.dataAnalise||"")));
+}
+function refreshAfterManifestLoad(){
+  loadStoredAnalysesToHistory();
+  renderAnalysisQueue();
+  renderStats(); renderTable(); updateMapColors(); renderQualityMeta(); renderQualityMatrix(); renderCompareCards(); renderCompareMunicipioStatus();
+}
+async function syncManifestFromAppsScript(silent=false){
+  const cfg = getAppsScriptConfig();
+  if(!cfg.url){
+    if(!silent) alert("Configure a URL do Web App do Apps Script antes de sincronizar.");
+    setSyncStatus("Integração não configurada. Os dados ficam apenas locais/exportáveis.");
+    return;
+  }
+  try{
+    setSyncStatus("Sincronizando análises da planilha-manifesto...");
+    const tokenParam = cfg.token ? (cfg.url.includes("?") ? "&" : "?") + "token=" + encodeURIComponent(cfg.token) : "";
+    const data = await jsonpRequest(cfg.url + tokenParam);
+    if(!data || !data.ok) throw new Error((data && data.error) || "Resposta inválida da planilha-manifesto.");
+    const incoming = (data.analyses || []).map(normalizeAnalysisPayload).filter(a=>a.municipio && a.dataAnalise);
+    const merged = mergeById(getStoredAnalyses(), incoming);
+    setStoredAnalyses(merged);
+    refreshAfterManifestLoad();
+    const msg = `Sincronização concluída: ${incoming.length} análise(s) carregada(s) da planilha-manifesto.`;
+    setSyncStatus(msg);
+    if(!silent) alert(msg);
+  }catch(err){
+    console.error(err);
+    const msg = "Falha ao sincronizar: " + (err.message || err);
+    setSyncStatus(msg);
+    if(!silent) alert(msg);
+  }
+}
+function populateAppsScriptConfig(){
+  const cfg = getAppsScriptConfig();
+  const urlInput = document.getElementById("appsScriptUrl");
+  const tokenInput = document.getElementById("appsScriptToken");
+  if(urlInput) urlInput.value = cfg.url;
+  if(tokenInput) tokenInput.value = cfg.token;
+}
+function saveAppsScriptConfig(){
+  const url = document.getElementById("appsScriptUrl").value.trim();
+  const token = document.getElementById("appsScriptToken").value.trim();
+  setAppsScriptConfig({url, token});
+  alert(url ? "Integração salva. Os próximos registros serão enviados também para a planilha-manifesto e as análises serão carregadas da planilha." : "Integração limpa. Os registros ficarão apenas locais/exportáveis.");
+  if(url) syncManifestFromAppsScript(false);
+}
+async function sha256Hex(text){
+  const data = new TextEncoder().encode(text);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function openInternalModal(){
+  document.getElementById("internalModalBackdrop").classList.add("open");
+  document.body.style.overflow = "hidden";
+  populateUploadMunicipios();
+  populateAppsScriptConfig();
+  renderUploadQueue();
+  populateAnalysisMunicipios();
+  renderAnalysisCriteriaFields();
+  renderAnalysisQueue();
+}
+function closeInternalModal(){
+  document.getElementById("internalModalBackdrop").classList.remove("open");
+  document.body.style.overflow = "";
+}
+function populateUploadMunicipios(){
+  const sel = document.getElementById("uploadMunicipio");
+  if(sel && !sel.options.length){
+    sel.innerHTML = REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
+  }
+}
+function getUploadQueue(){
+  try{return JSON.parse(localStorage.getItem(UPLOAD_STORAGE_KEY) || "[]");}
+  catch(e){return [];}
+}
+function setUploadQueue(items){
+  localStorage.setItem(UPLOAD_STORAGE_KEY, JSON.stringify(items));
+}
+function formatFileSize(bytes){
+  if(bytes < 1024) return bytes + " B";
+  if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + " KB";
+  return (bytes/(1024*1024)).toFixed(1) + " MB";
+}
+function renderUploadQueue(){
+  const tbody = document.getElementById("uploadQueueBody");
+  if(!tbody) return;
+  const items = getUploadQueue();
+  if(!items.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Nenhum envio registrado nesta estação.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.slice().reverse().map(item=>{
+    const localFiles = (item.files || []).map(f=>`${f.name} <span class="dim">(${formatFileSize(f.size)})</span>`).join("<br>");
+    const driveFiles = (item.driveFiles || []).map(f=> f.url ? `<a href="${f.url}" target="_blank" rel="noopener">${f.name || "Arquivo no Drive"}</a>${f.fileId ? `<br><span class="dim">ID: ${f.fileId}</span>` : ""}` : `${f.name || "Arquivo no Drive"}`).join("<br>");
+    const files = [driveFiles, localFiles].filter(Boolean).join("<br>") || "—";
+    return `<tr>
+      <td class="mono">${item.registeredAt}</td>
+      <td class="municipio-cell">${item.municipio}</td>
+      <td>${item.label}${item.documentDate ? `<br><span class="dim">Doc.: ${item.documentDate}</span>` : ""}${item.responsible ? `<br><span class="dim">Resp.: ${item.responsible}</span>` : ""}</td>
+      <td>${files}${item.notes ? `<br><span class="dim">Obs.: ${item.notes}</span>` : ""}</td>
+      <td><span class="upload-chip">Aguardando análise</span>${item.syncStatus ? `<br><span class="dim">${item.syncStatus}</span>` : ""}</td>
+    </tr>`;
+  }).join("");
+}
+async function unlockUploadArea(){
+  const pass = document.getElementById("uploadPassword").value || "";
+  const error = document.getElementById("uploadError");
+  const digest = await sha256Hex(pass);
+  if(digest !== UPLOAD_PASSWORD_HASH){
+    error.classList.add("show");
+    return;
+  }
+  error.classList.remove("show");
+  document.getElementById("uploadLocked").classList.remove("active");
+  document.getElementById("uploadUnlocked").classList.add("active");
+  renderUploadQueue();
+}
+function extractDriveFileId(url){
+  if(!url) return "";
+  const patterns = [
+    /\/file\/d\/([^/]+)/,
+    /[?&]id=([^&]+)/,
+    /\/document\/d\/([^/]+)/,
+    /\/spreadsheets\/d\/([^/]+)/,
+    /\/presentation\/d\/([^/]+)/,
+    /\/folders\/([^/?]+)/
+  ];
+  for(const pattern of patterns){
+    const match = url.match(pattern);
+    if(match) return decodeURIComponent(match[1]);
+  }
+  return "";
+}
+async function syncUploadToAppsScript(item){
+  const cfg = getAppsScriptConfig();
+  if(!cfg.url){
+    return {sent:false, message:"não sincronizado: integração não configurada"};
+  }
+  const payload = {
+    schema:"redec5.plancon.upload_event.v1",
+    token: cfg.token || "",
+    painel:"PLANCON REDEC 5 Sul I",
+    item
+  };
+  try{
+    await fetch(cfg.url, {
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify(payload)
+    });
+    return {sent:true, message:"enviado para planilha"};
+  }catch(err){
+    console.error(err);
+    return {sent:false, message:"falha ao enviar para planilha"};
+  }
+}
+async function registerUpload(){
+  const filesInput = document.getElementById("uploadFiles");
+  const files = [...filesInput.files];
+  const driveUrl = document.getElementById("uploadDriveUrl").value.trim();
+  const driveName = document.getElementById("uploadDriveName").value.trim();
+  if(!files.length && !driveUrl){ alert("Selecione um arquivo local ou informe o link do arquivo no Google Drive."); return; }
+  const now = new Date();
+  const item = {
+    id: "upload_" + now.getTime(),
+    registeredAt: now.toLocaleDateString("pt-BR") + " " + now.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}),
+    municipio: document.getElementById("uploadMunicipio").value,
+    label: document.getElementById("uploadLabel").value,
+    documentDate: document.getElementById("uploadDocDate").value || "",
+    responsible: document.getElementById("uploadResponsible").value.trim(),
+    notes: document.getElementById("uploadNotes").value.trim(),
+    status: "aguardando_analise",
+    source: driveUrl ? "google_drive" : "local",
+    driveFiles: driveUrl ? [{
+      name: driveName || "Arquivo selecionado no Google Drive",
+      url: driveUrl,
+      fileId: extractDriveFileId(driveUrl),
+      storage: "google_drive_institucional"
+    }] : [],
+    files: files.map(f=>({name:f.name, size:f.size, type:f.type || "", lastModified:f.lastModified}))
+  };
+  const items = getUploadQueue();
+  items.push(item);
+  setUploadQueue(items);
+  renderUploadQueue();
+
+  const sync = await syncUploadToAppsScript(item);
+  const updated = getUploadQueue();
+  const idx = updated.findIndex(x=>x.id === item.id);
+  if(idx >= 0){
+    updated[idx].syncStatus = sync.message;
+    updated[idx].syncedAt = sync.sent ? new Date().toISOString() : "";
+    setUploadQueue(updated);
+  }
+
+  filesInput.value = "";
+  document.getElementById("uploadDriveUrl").value = "";
+  document.getElementById("uploadDriveName").value = "";
+  document.getElementById("uploadNotes").value = "";
+  renderUploadQueue();
+  alert(sync.sent ? "Envio registrado e encaminhado para a planilha-manifesto." : "Envio registrado localmente. " + sync.message);
+}
+
+function populateAnalysisMunicipios(){
+  const sel = document.getElementById("analysisMunicipio");
+  if(sel && !sel.options.length){
+    sel.innerHTML = REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
+  }
+}
+function normalizeAnalysisStatus(value){
+  const v = String(value || "").trim().toLowerCase();
+  const map = {
+    "ok":"ok", "atende totalmente":"ok", "total":"ok", "✅":"ok",
+    "warn":"warn", "atende parcialmente":"warn", "parcial":"warn", "⚠️":"warn", "⚠":"warn",
+    "bad":"bad", "não atende":"bad", "nao atende":"bad", "não":"bad", "nao":"bad", "❌":"bad",
+    "pending":"pending", "pendente":"pending", "sem documento":"pending", "⏳":"pending"
+  };
+  return map[v] || "";
+}
+function slugifyId(text){
+  return String(text || "")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")
+    .slice(0, 60) || "analise";
+}
+function toBRDate(iso){
+  if(!iso) return "";
+  const parts = String(iso).split("-");
+  if(parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return iso;
+}
+function renderAnalysisCriteriaFields(){
+  const wrap = document.getElementById("analysisCriteriaFields");
+  if(!wrap || wrap.dataset.ready === "1") return;
+  wrap.innerHTML = QUALITY_CRITERIA.map(c=>`
+    <div class="analysis-criterion" data-crit="${c.id}">
+      <div class="analysis-criterion-head">
+        <div class="analysis-criterion-title">C${c.id} — ${c.short}<br><span class="dim">${c.full}</span></div>
+        <select class="crit-status-select" id="analysisC${c.id}Status">
+          <option value="">Selecione</option>
+          <option value="ok">✅ Atende totalmente</option>
+          <option value="warn">⚠️ Atende parcialmente</option>
+          <option value="bad">❌ Não atende</option>
+          <option value="pending">⏳ Pendente</option>
+        </select>
+      </div>
+      <div class="analysis-criterion-grid">
+        <textarea id="analysisC${c.id}Just" placeholder="Justificativa da classificação"></textarea>
+        <textarea id="analysisC${c.id}Evid" placeholder="Evidência: página, seção ou trecho do PLANCON"></textarea>
+        <textarea id="analysisC${c.id}Rec" placeholder="Recomendação de melhoria"></textarea>
+      </div>
+    </div>`).join("");
+  wrap.dataset.ready = "1";
+}
+function getStoredAnalyses(){
+  try{return JSON.parse(localStorage.getItem(ANALYSIS_STORAGE_KEY) || "[]");}
+  catch(e){return [];}
+}
+function setStoredAnalyses(items){
+  localStorage.setItem(ANALYSIS_STORAGE_KEY, JSON.stringify(items));
+}
+function normalizeAnalysisPayload(raw){
+  const a = raw || {};
+  const municipio = a.municipio || a.município || "";
+  const rotulo = a.rotulo || a.rótulo || a.versaoAnalise || a.versãoAnalise || a.label || "Nova análise";
+  const dataAnalise = a.dataAnalise || a.data_análise || a.dataAnaliseBR || a.data || "";
+  const documento = a.documento || a.documentoAnalisado || a.documento_analisado || "";
+  const linkDrive = a.linkDrive || a.driveUrl || a.link || "";
+  const analista = a.analista || a.responsavel || a.responsável || "";
+  const sintese = a.sintese || a.síntese || a.resumo || "";
+  const critIn = a.criterios || a.critérios || {};
+  const criterios = {};
+  QUALITY_CRITERIA.forEach(c=>{
+    const src = critIn[`c${c.id}`] || critIn[String(c.id)] || {};
+    const status = normalizeAnalysisStatus(src.status || src.situacao || src.situação || src.classificacao || src.classificação);
+    criterios[String(c.id)] = {
+      status,
+      texto: src.justificativa || src.texto || src.nota || "",
+      evidencia: src.evidencia || src.evidência || "",
+      recomendacao: src.recomendacao || src.recomendação || ""
+    };
+  });
+  const idBase = `${slugifyId(municipio)}_${slugifyId(rotulo)}_${slugifyId(dataAnalise || new Date().toISOString().slice(0,10))}`;
+  return {
+    id: a.id || idBase,
+    municipio,
+    rotulo,
+    dataAnalise,
+    documento,
+    linkDrive,
+    driveFileId: a.driveFileId || extractDriveFileId(linkDrive),
+    analista,
+    sintese,
+    criterios,
+    registeredAt: a.registeredAt || new Date().toLocaleDateString("pt-BR") + " " + new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}),
+    source: "analise_tecnica"
+  };
+}
+function validateAnalysis(a){
+  if(!a.municipio || !REDEC.includes(a.municipio)) return "Município inválido ou não selecionado.";
+  if(!a.rotulo) return "Informe a versão/rótulo da análise.";
+  if(!a.dataAnalise) return "Informe a data da análise.";
+  for(const c of QUALITY_CRITERIA){
+    const item = a.criterios[String(c.id)];
+    if(!item || !item.status) return `Informe o status do critério C${c.id}.`;
+    if(!["ok","warn","bad","pending"].includes(item.status)) return `Status inválido no critério C${c.id}.`;
+    if(item.status !== "pending" && !item.texto.trim()) return `Informe a justificativa do critério C${c.id}.`;
+  }
+  return "";
+}
+function addAnalysisToHistory(a){
+  if(!QUALITY_HISTORY[a.municipio]) QUALITY_HISTORY[a.municipio] = [];
+  const version = {
+    id: a.id,
+    rotulo: a.rotulo,
+    dataAnalise: toBRDate(a.dataAnalise),
+    documento: a.documento || "Documento informado na análise técnica",
+    linkDrive: a.linkDrive || "",
+    analista: a.analista || "",
+    sintese: a.sintese || "",
+    criterios: a.criterios
+  };
+  const arr = QUALITY_HISTORY[a.municipio];
+  const idx = arr.findIndex(v=>v.id === version.id);
+  if(idx >= 0) arr[idx] = version; else arr.push(version);
+  arr.sort((x,y)=>dateSortKey(x.dataAnalise).localeCompare(dateSortKey(y.dataAnalise)));
+}
+function dateSortKey(value){
+  const s = String(value || "").trim();
+  const br = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if(br) return `${br[3]}-${br[2]}-${br[1]}`;
+  const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(iso) return `${iso[1]}-${iso[2]}-${iso[3]}`;
+  return s;
+}
+function loadStoredAnalysesToHistory(){
+  getStoredAnalyses().forEach(addAnalysisToHistory);
+}
+function renderAnalysisQueue(){
+  const tbody = document.getElementById("analysisQueueBody");
+  if(!tbody) return;
+  const items = getStoredAnalyses();
+  if(!items.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Nenhuma análise técnica registrada nesta estação.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items.slice().reverse().map(a=>`
+    <tr>
+      <td class="mono">${toBRDate(a.dataAnalise)}<br><span class="dim">Reg.: ${a.registeredAt || "—"}</span></td>
+      <td class="municipio-cell">${a.municipio}</td>
+      <td>${a.rotulo}<br><span class="dim">${a.analista ? `Analista: ${a.analista}` : ""}</span></td>
+      <td>${a.linkDrive ? `<a href="${a.linkDrive}" target="_blank" rel="noopener">${a.documento || "Documento no Drive"}</a>` : (a.documento || "—")}</td>
+      <td><span class="analysis-chip">Análise registrada</span>${a.syncStatus ? `<br><span class="dim">${a.syncStatus}</span>` : ""}</td>
+    </tr>`).join("");
+}
+function buildAnalysisFromForm(){
+  const criterios = {};
+  QUALITY_CRITERIA.forEach(c=>{
+    criterios[String(c.id)] = {
+      status: document.getElementById(`analysisC${c.id}Status`).value,
+      texto: document.getElementById(`analysisC${c.id}Just`).value.trim(),
+      evidencia: document.getElementById(`analysisC${c.id}Evid`).value.trim(),
+      recomendacao: document.getElementById(`analysisC${c.id}Rec`).value.trim()
+    };
+  });
+  return normalizeAnalysisPayload({
+    municipio: document.getElementById("analysisMunicipio").value,
+    rotulo: document.getElementById("analysisLabel").value,
+    dataAnalise: document.getElementById("analysisDate").value,
+    documento: document.getElementById("analysisDocument").value.trim(),
+    linkDrive: document.getElementById("analysisDriveUrl").value.trim(),
+    analista: document.getElementById("analysisAnalyst").value.trim(),
+    sintese: document.getElementById("analysisSummary").value.trim(),
+    criterios
+  });
+}
+async function syncAnalysisToAppsScript(analysis){
+  const cfg = getAppsScriptConfig();
+  if(!cfg.url) return {sent:false, message:"não sincronizado: integração não configurada"};
+  const payload = {
+    schema:"redec5.plancon.analysis_event.v1",
+    token: cfg.token || "",
+    painel:"PLANCON REDEC 5 Sul I",
+    analysis
+  };
+  try{
+    await fetch(cfg.url, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
+    return {sent:true, message:"análise enviada para planilha"};
+  }catch(err){
+    console.error(err);
+    return {sent:false, message:"falha ao enviar análise para planilha"};
+  }
+}
+async function saveAnalysis(analysis){
+  const err = validateAnalysis(analysis);
+  if(err){ alert(err); return; }
+  const items = getStoredAnalyses();
+  const idx = items.findIndex(x=>x.id === analysis.id);
+  if(idx >= 0) items[idx] = analysis; else items.push(analysis);
+  setStoredAnalyses(items);
+  addAnalysisToHistory(analysis);
+  renderAnalysisQueue();
+  renderStats(); renderTable(); updateMapColors(); renderQualityMeta(); renderQualityMatrix(); renderCompareCards(); renderCompareMunicipioStatus();
+  const sync = await syncAnalysisToAppsScript(analysis);
+  const updated = getStoredAnalyses();
+  const uidx = updated.findIndex(x=>x.id === analysis.id);
+  if(uidx >= 0){ updated[uidx].syncStatus = sync.message; updated[uidx].syncedAt = sync.sent ? new Date().toISOString() : ""; setStoredAnalyses(updated); }
+  renderAnalysisQueue();
+  alert(sync.sent ? "Análise registrada e enviada para a planilha-manifesto." : "Análise registrada localmente. " + sync.message);
+}
+function clearAnalysisForm(){
+  ["analysisDocument","analysisDriveUrl","analysisAnalyst","analysisSummary"].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=""; });
+  const d = document.getElementById("analysisDate"); if(d) d.value="";
+  QUALITY_CRITERIA.forEach(c=>{
+    document.getElementById(`analysisC${c.id}Status`).value="";
+    document.getElementById(`analysisC${c.id}Just`).value="";
+    document.getElementById(`analysisC${c.id}Evid`).value="";
+    document.getElementById(`analysisC${c.id}Rec`).value="";
+  });
+}
+function analysisTemplate(){
+  const municipio = document.getElementById("analysisMunicipio")?.value || "Barra Mansa";
+  const criterios = {};
+  QUALITY_CRITERIA.forEach(c=>{ criterios[`c${c.id}`] = {status:"warn", justificativa:"", evidencia:"", recomendacao:""}; });
+  return JSON.stringify({
+    municipio,
+    rotulo:"Pós-orientação",
+    dataAnalise:new Date().toISOString().slice(0,10),
+    documento:"Nome do arquivo analisado.pdf",
+    linkDrive:"https://drive.google.com/file/d/ID_DO_ARQUIVO/view",
+    analista:"Nome ou e-mail institucional",
+    sintese:"Síntese técnica da análise.",
+    criterios
+  }, null, 2);
+}
+function copyAnalysisTemplate(){
+  const box = document.getElementById("analysisJsonInput");
+  box.value = analysisTemplate();
+  box.focus();
+  navigator.clipboard?.writeText(box.value).catch(()=>{});
+  alert("Modelo JSON inserido no campo e copiado para a área de transferência, se permitido pelo navegador.");
+}
+function copyAnalysisAiPrompt(){
+  const box = document.getElementById("analysisAiPrompt");
+  if(!box) return;
+  box.focus();
+  box.select();
+  navigator.clipboard?.writeText(box.value).then(()=>{
+    alert("Prompt copiado para a área de transferência.");
+  }).catch(()=>{
+    alert("Prompt selecionado. Use Ctrl+C para copiar.");
+  });
+}
+async function registerAnalysisFromForm(){ await saveAnalysis(buildAnalysisFromForm()); }
+async function importAnalysisJson(){
+  const raw = document.getElementById("analysisJsonInput").value.trim();
+  if(!raw){ alert("Cole o JSON da análise antes de importar."); return; }
+  try{ await saveAnalysis(normalizeAnalysisPayload(JSON.parse(raw))); }
+  catch(err){ alert("JSON inválido: " + (err.message || err)); }
+}
+function exportAnalysesManifest(){
+  const items = getStoredAnalyses();
+  const blob = new Blob([JSON.stringify({schema:"redec5.plancon.analysis_manifest.v1", exportedAt:new Date().toISOString(), analyses:items}, null, 2)], {type:"application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "manifesto_analises_plancon_redec5.json"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+function clearAnalyses(){
+  const msg = "Esta ação limpa somente as análises técnicas salvas localmente neste navegador. A planilha-manifesto, os arquivos do Drive e o diagnóstico inicial embutido serão preservados. Para confirmar, digite LIMPAR.";
+  if(prompt(msg) === "LIMPAR"){
+    localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+    location.reload();
+  }
+}
+function setupAnalysisTabs(){
+  document.querySelectorAll(".analysis-tab").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".analysis-tab").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".analysis-panel").forEach(p=>p.classList.remove("active"));
+      btn.classList.add("active");
+      const tab = btn.dataset.analysisTab;
+      document.getElementById(tab === "json" ? "analysisPanelJson" : "analysisPanelForm").classList.add("active");
+    });
+  });
+}
+
+function exportUploadManifest(){
+  const items = getUploadQueue();
+  const blob = new Blob([JSON.stringify({
+    schema:"redec5.plancon.upload_manifest.v2",
+    exportedAt:new Date().toISOString(),
+    storageModel:"google_drive_institucional_com_triagem_local",
+    uploads:items
+  }, null, 2)], {type:"application/json;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "manifesto_uploads_plancon_redec5.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+function clearUploadQueue(){
+  const msg = "Esta ação limpa somente os registros locais de versões/envios deste navegador. A planilha-manifesto e os arquivos do Google Drive serão preservados. Para confirmar, digite LIMPAR.";
+  if(prompt(msg) === "LIMPAR"){
+    localStorage.removeItem(UPLOAD_STORAGE_KEY);
+    renderUploadQueue();
+  }
+}
+
+function openDrivePickerPlaceholder(){
+  if(!GOOGLE_DRIVE_CONFIG.enabled){
+    alert("Integração Google Drive ainda não configurada. Por enquanto, abra o Drive do trabalho, copie o link do arquivo e cole no campo ‘Arquivo no Google Drive’. Para ativar o seletor oficial, será necessário preencher clientId/apiKey e configurar OAuth no Google Cloud/Workspace.");
+    return;
+  }
+  alert("Google Picker configurado: aqui será aberta a janela oficial de seleção do Drive institucional.");
+}
+
+const internalOpen = document.getElementById("internalOpenBtn");
+if(internalOpen) internalOpen.addEventListener("click", openInternalModal);
+document.getElementById("internalModalClose").addEventListener("click", closeInternalModal);
+document.getElementById("internalModalBackdrop").addEventListener("click", (e)=>{
+  if(e.target.id === "internalModalBackdrop") closeInternalModal();
+});
+document.getElementById("uploadLoginBtn").addEventListener("click", unlockUploadArea);
+document.getElementById("uploadPassword").addEventListener("keydown", (e)=>{ if(e.key === "Enter") unlockUploadArea(); });
+document.getElementById("saveAppsScriptConfigBtn").addEventListener("click", saveAppsScriptConfig);
+document.getElementById("syncManifestBtn").addEventListener("click", ()=>syncManifestFromAppsScript(false));
+document.getElementById("uploadRegisterBtn").addEventListener("click", registerUpload);
+document.getElementById("drivePickerBtn").addEventListener("click", openDrivePickerPlaceholder);
+document.getElementById("uploadExportBtn").addEventListener("click", exportUploadManifest);
+document.getElementById("uploadClearBtn").addEventListener("click", clearUploadQueue);
+setupAnalysisTabs();
+document.getElementById("analysisRegisterBtn").addEventListener("click", registerAnalysisFromForm);
+document.getElementById("analysisClearFormBtn").addEventListener("click", clearAnalysisForm);
+document.getElementById("analysisImportJsonBtn").addEventListener("click", importAnalysisJson);
+document.getElementById("analysisTemplateBtn").addEventListener("click", copyAnalysisTemplate);
+document.getElementById("analysisCopyPromptBtn").addEventListener("click", copyAnalysisAiPrompt);
+document.getElementById("analysisExportBtn").addEventListener("click", exportAnalysesManifest);
+document.getElementById("analysisClearBtn").addEventListener("click", clearAnalyses);
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape" && document.getElementById("internalModalBackdrop").classList.contains("open")){
+    closeInternalModal();
+  }
+});
+
+
 /* ============================================================================
    INIT
    ============================================================================ */
+loadStoredAnalysesToHistory();
 renderStats();
 initMap();
 initDonut();
@@ -1468,6 +2601,8 @@ renderTable();
 renderCritList();
 renderQualityMeta();
 renderQualityMatrix();
+// Carregamento automático da planilha-manifesto, quando a integração estiver configurada.
+syncManifestFromAppsScript(true);
 </script>
 </body>
 </html>
