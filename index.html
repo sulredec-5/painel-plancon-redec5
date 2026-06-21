@@ -2019,20 +2019,34 @@ function setSyncStatus(msg){
   const el = document.getElementById("syncManifestStatus");
   if(el) el.textContent = msg;
 }
-function jsonpRequest(url){
-  return new Promise((resolve, reject)=>{
-    const cb = "__planconManifestCb_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-    const sep = url.includes("?") ? "&" : "?";
-    const script = document.createElement("script");
-    const cleanup = ()=>{
-      try{ delete window[cb]; }catch(e){ window[cb] = undefined; }
-      script.remove();
-    };
-    window[cb] = (data)=>{ cleanup(); resolve(data); };
-    script.onerror = ()=>{ cleanup(); reject(new Error("Não foi possível carregar a planilha-manifesto.")); };
-    script.src = url + sep + "action=export&callback=" + encodeURIComponent(cb);
-    document.head.appendChild(script);
-  });
+async function jsonpRequest(url){
+  // Usa fetch() em vez de <script> JSONP: o Apps Script Web App responde
+  // com um redirect 302 para script.googleusercontent.com, e tags <script>
+  // carregando esse redirect como subresource cross-site podem falhar
+  // silenciosamente em navegadores modernos. fetch() segue o redirect
+  // corretamente e a resposta já vem com Access-Control-Allow-Origin: *.
+  const sep = url.includes("?") ? "&" : "?";
+  const fullUrl = url + sep + "action=export";
+  let response;
+  try{
+    response = await fetch(fullUrl, {
+      method: "GET",
+      redirect: "follow",
+      mode: "cors",
+      credentials: "omit"
+    });
+  }catch(err){
+    throw new Error("Não foi possível carregar a planilha-manifesto.");
+  }
+  if(!response.ok){
+    throw new Error("Não foi possível carregar a planilha-manifesto (HTTP " + response.status + ").");
+  }
+  const text = await response.text();
+  try{
+    return JSON.parse(text);
+  }catch(e){
+    throw new Error("Resposta inesperada da planilha-manifesto (não é JSON válido).");
+  }
 }
 function mergeById(localItems, incomingItems){
   const map = new Map();
