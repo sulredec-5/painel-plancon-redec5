@@ -1379,7 +1379,7 @@ const QUALITY_DATA = {
    ============================================================================ */
 const QUALITY_HISTORY = Object.fromEntries(
   Object.entries(QUALITY_DATA).map(([municipio, data]) => [municipio, [{
-    id: "baseline_2026_06_19",
+    id: "baseline_2026_06_19_" + slugifyId(municipio),
     rotulo: "Diagnóstico inicial",
     dataAnalise: data.analisadoEm,
     documento: data.fonte,
