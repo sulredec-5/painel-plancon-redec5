@@ -569,6 +569,37 @@
             </table>
           </div>
 
+          <h3 class="internal-section-title">Observações de entrega</h3>
+          <div class="upload-note"><strong>Observação curta:</strong> use este campo para registrar avisos operacionais sobre a entrega do PLANCON de um município/ano (ex.: "Nova versão em confecção conforme reunião presencial IntegraCON"). A observação aparece no mapa e na tabela de entregas, junto ao status do município. Cada município/ano tem apenas <strong>uma observação ativa</strong> — salvar de novo substitui a anterior.</div>
+          <div class="upload-form">
+            <div class="upload-field">
+              <label for="obsMunicipio">Município</label>
+              <select id="obsMunicipio"></select>
+            </div>
+            <div class="upload-field">
+              <label for="obsAno">Ano</label>
+              <select id="obsAno"></select>
+            </div>
+            <div class="upload-field">
+              <label for="obsResponsible">Responsável pelo registro</label>
+              <input type="text" id="obsResponsible" placeholder="Nome ou e-mail institucional">
+            </div>
+            <div class="upload-field full">
+              <label for="obsText">Observação</label>
+              <textarea id="obsText" placeholder="Ex.: Nova versão em confecção conforme reunião presencial IntegraCON."></textarea>
+            </div>
+          </div>
+          <div class="upload-actions">
+            <button class="upload-action-btn" id="obsRegisterBtn">Salvar observação</button>
+            <button class="upload-action-btn secondary" id="obsClearFieldBtn">Limpar campo (remover observação)</button>
+          </div>
+          <div class="upload-table-wrap">
+            <table class="upload-table">
+              <thead><tr><th>Município</th><th>Ano</th><th>Observação</th><th>Responsável</th><th>Atualizado em</th></tr></thead>
+              <tbody id="obsQueueBody"></tbody>
+            </table>
+          </div>
+
           <h3 class="internal-section-title">Inserir análise técnica</h3>
           <div class="upload-note"><strong>Análise estruturada:</strong> após a equipe avaliar o PLANCON pelos 8 critérios, insira o resultado aqui por formulário guiado ou cole um JSON válido gerado/revisado pela equipe. O painel salvará a nova versão analisada, atualizará o histórico do município e liberará a comparação antes vs depois quando houver ao menos duas análises.</div>
           <div class="analysis-prompt-wrap">
@@ -717,7 +748,7 @@ const GEOJSON = {"type":"FeatureCollection","features":[{"type":"Feature","prope
 const ALL_DATA = [
   // ── 2026 (ciclo 2025/2026) ─────────────────────────────────────────────
   {ano:2026,municipio:"Barra do Piraí",risco:"Plano geral (PLANCON)",versao:"2025/2026",atualizacao:"30/01/2025",status:"ok",link:"https://drive.google.com/file/d/1DYwHO687NHnW9P-HJY2-Uwd2q_aGu0PX/view"},
-  {ano:2026,municipio:"Barra Mansa",risco:"Deslizamento de grande impacto e alagamento",versao:"3",atualizacao:"16/07/2024 (pasta 2025)",status:"warn",obs:"Nova versão em confecção conforme reunião presencial IntegraCON.",link:"https://drive.google.com/file/d/17neZ2Ygz_RtUyaOlVXOboVZtSBeQkZ3F/view"},
+  {ano:2026,municipio:"Barra Mansa",risco:"Deslizamento de grande impacto e alagamento",versao:"3",atualizacao:"16/07/2024 (pasta 2025)",status:"warn",link:"https://drive.google.com/file/d/17neZ2Ygz_RtUyaOlVXOboVZtSBeQkZ3F/view"},
   {ano:2026,municipio:"Comendador Levy Gasparian",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
   {ano:2026,municipio:"Itatiaia",risco:"Inundações",versao:"002-2021",atualizacao:"08/2025",status:"ok",link:"https://drive.google.com/file/d/1wu-n9vBj5Ze52DcqyF2WeV8D4TzWJ3Hr/view"},
   {ano:2026,municipio:"Itatiaia",risco:"Alagamentos",versao:"002-2021",atualizacao:"08/2025",status:"ok",link:"https://drive.google.com/file/d/1l8daMC2t4k3qqkl_NRvD9OK8bfk0Vgmt/view"},
@@ -2016,9 +2047,17 @@ function mergeById(localItems, incomingItems){
   (incomingItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, {...map.get(item.id), ...item, syncStatus:item.syncStatus || "carregada da planilha"}); });
   return Array.from(map.values()).sort((a,b)=>String(a.dataAnalise||"").localeCompare(String(b.dataAnalise||"")));
 }
+function mergeObservationsById(localItems, incomingItems){
+  const map = new Map();
+  (localItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, item); });
+  (incomingItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, {...map.get(item.id), ...item}); });
+  return Array.from(map.values()).sort((a,b)=> String(b.ano).localeCompare(String(a.ano)) || String(a.municipio||"").localeCompare(String(b.municipio||"")));
+}
 function refreshAfterManifestLoad(){
   loadStoredAnalysesToHistory();
+  loadStoredObservationsToAllData();
   renderAnalysisQueue();
+  renderObsQueue();
   renderStats(); renderTable(); updateMapColors(); renderQualityMeta(); renderQualityMatrix(); renderCompareCards(); renderCompareMunicipioStatus();
 }
 async function syncManifestFromAppsScript(silent=false){
@@ -2036,8 +2075,11 @@ async function syncManifestFromAppsScript(silent=false){
     const incoming = (data.analyses || []).map(normalizeAnalysisPayload).filter(a=>a.municipio && a.dataAnalise);
     const merged = mergeById(getStoredAnalyses(), incoming);
     setStoredAnalyses(merged);
+    const incomingObs = (data.observations || []).map(normalizeObservationPayload).filter(o=>o.municipio && o.ano);
+    const mergedObs = mergeObservationsById(getStoredObservations(), incomingObs);
+    setStoredObservations(mergedObs);
     refreshAfterManifestLoad();
-    const msg = `Sincronização concluída: ${incoming.length} análise(s) carregada(s) da planilha-manifesto.`;
+    const msg = `Sincronização concluída: ${incoming.length} análise(s) e ${incomingObs.length} observação(ões) carregada(s) da planilha-manifesto.`;
     setSyncStatus(msg);
     if(!silent) alert(msg);
   }catch(err){
@@ -2072,6 +2114,8 @@ function openInternalModal(){
   populateUploadMunicipios();
   populateAppsScriptConfig();
   renderUploadQueue();
+  populateObsSelectors();
+  renderObsQueue();
   populateAnalysisMunicipios();
   renderAnalysisCriteriaFields();
   renderAnalysisQueue();
@@ -2119,6 +2163,141 @@ function renderUploadQueue(){
     </tr>`;
   }).join("");
 }
+
+/* ===== Observações de entrega (município/ano) ===== */
+const OBS_STORAGE_KEY = "redec5_plancon_observacoes_entrega_v1";
+
+function populateObsSelectors(){
+  const munSel = document.getElementById("obsMunicipio");
+  if(munSel && !munSel.options.length){
+    munSel.innerHTML = REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
+  }
+  const anoSel = document.getElementById("obsAno");
+  if(anoSel && !anoSel.options.length){
+    anoSel.innerHTML = ANOS.map(a=>`<option value="${a}">${a}</option>`).join("");
+  }
+}
+
+function getStoredObservations(){
+  try{ return JSON.parse(localStorage.getItem(OBS_STORAGE_KEY) || "[]"); }
+  catch(e){ return []; }
+}
+function setStoredObservations(items){
+  localStorage.setItem(OBS_STORAGE_KEY, JSON.stringify(items));
+}
+
+function makeObservationId(municipio, ano){
+  return slugifyId(municipio) + "_" + slugifyId(String(ano));
+}
+
+function normalizeObservationPayload(raw){
+  const o = raw || {};
+  const municipio = o.municipio || "";
+  const ano = Number(o.ano) || o.ano || "";
+  return {
+    id: o.id || makeObservationId(municipio, ano),
+    municipio,
+    ano,
+    observacao: (o.observacao || "").trim(),
+    responsavel: (o.responsavel || "").trim(),
+    updatedAt: o.updatedAt || new Date().toISOString()
+  };
+}
+
+// Aplica as observações carregadas (planilha ou local) por cima do ALL_DATA,
+// sobrescrevendo o campo "obs" da linha correspondente (município + ano).
+// Uma observação vazia remove o campo "obs" da linha (em vez de deixar texto vazio visível).
+function applyObservationsToAllData(observations){
+  observations.forEach(o=>{
+    if(!o.municipio || !o.ano) return;
+    const row = ALL_DATA.find(d=>d.municipio === o.municipio && Number(d.ano) === Number(o.ano));
+    if(!row) return;
+    if(o.observacao){
+      row.obs = o.observacao;
+    } else {
+      delete row.obs;
+    }
+  });
+}
+
+function loadStoredObservationsToAllData(){
+  applyObservationsToAllData(getStoredObservations());
+}
+
+function renderObsQueue(){
+  const tbody = document.getElementById("obsQueueBody");
+  if(!tbody) return;
+  const items = getStoredObservations().filter(o=>o.observacao);
+  if(!items.length){
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Nenhuma observação de entrega registrada.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = items
+    .slice()
+    .sort((a,b)=> String(b.ano).localeCompare(String(a.ano)) || a.municipio.localeCompare(b.municipio))
+    .map(o=>`<tr>
+      <td class="municipio-cell">${o.municipio}</td>
+      <td class="mono">${o.ano}</td>
+      <td>${o.observacao}</td>
+      <td>${o.responsavel || "—"}</td>
+      <td class="mono dim">${o.updatedAt ? new Date(o.updatedAt).toLocaleDateString("pt-BR") : "—"}</td>
+    </tr>`).join("");
+}
+
+async function syncObservationToAppsScript(observation){
+  const cfg = getAppsScriptConfig();
+  if(!cfg.url) return {sent:false, message:"não sincronizado: integração não configurada"};
+  const payload = {
+    schema:"redec5.plancon.observation_event.v1",
+    token: cfg.token || "",
+    painel:"PLANCON REDEC 5 Sul I",
+    observation
+  };
+  try{
+    await fetch(cfg.url, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
+    return {sent:true, message:"observação enviada para planilha"};
+  }catch(err){
+    console.error(err);
+    return {sent:false, message:"falha ao enviar observação para planilha"};
+  }
+}
+
+async function saveObservation(observation){
+  const items = getStoredObservations();
+  const idx = items.findIndex(x=>x.id === observation.id);
+  if(idx >= 0) items[idx] = observation; else items.push(observation);
+  setStoredObservations(items);
+  applyObservationsToAllData([observation]);
+  renderObsQueue();
+  renderStats(); renderTable(); updateMapColors();
+  const sync = await syncObservationToAppsScript(observation);
+  alert(sync.sent
+    ? (observation.observacao ? "Observação salva e enviada para a planilha." : "Observação removida e enviada para a planilha.")
+    : "Observação salva localmente. " + sync.message);
+}
+
+async function registerObservationFromForm(){
+  const observation = normalizeObservationPayload({
+    municipio: document.getElementById("obsMunicipio").value,
+    ano: document.getElementById("obsAno").value,
+    responsavel: document.getElementById("obsResponsible").value,
+    observacao: document.getElementById("obsText").value
+  });
+  if(!observation.observacao){
+    alert("Escreva o texto da observação antes de salvar, ou use 'Limpar campo' para remover uma observação existente.");
+    return;
+  }
+  await saveObservation(observation);
+}
+
+async function clearObservationFromForm(){
+  const municipio = document.getElementById("obsMunicipio").value;
+  const ano = document.getElementById("obsAno").value;
+  const observation = normalizeObservationPayload({ municipio, ano, observacao: "", responsavel: document.getElementById("obsResponsible").value });
+  await saveObservation(observation);
+  document.getElementById("obsText").value = "";
+}
+
 async function unlockUploadArea(){
   const pass = document.getElementById("uploadPassword").value || "";
   const error = document.getElementById("uploadError");
@@ -2549,6 +2728,8 @@ document.getElementById("uploadRegisterBtn").addEventListener("click", registerU
 document.getElementById("drivePickerBtn").addEventListener("click", openDrivePickerPlaceholder);
 document.getElementById("uploadExportBtn").addEventListener("click", exportUploadManifest);
 document.getElementById("uploadClearBtn").addEventListener("click", clearUploadQueue);
+document.getElementById("obsRegisterBtn").addEventListener("click", registerObservationFromForm);
+document.getElementById("obsClearFieldBtn").addEventListener("click", clearObservationFromForm);
 setupAnalysisTabs();
 document.getElementById("analysisRegisterBtn").addEventListener("click", registerAnalysisFromForm);
 document.getElementById("analysisClearFormBtn").addEventListener("click", clearAnalysisForm);
@@ -2568,6 +2749,7 @@ document.addEventListener("keydown", (e)=>{
    INIT
    ============================================================================ */
 loadStoredAnalysesToHistory();
+loadStoredObservationsToAllData();
 renderStats();
 initMap();
 initDonut();
