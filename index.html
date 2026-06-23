@@ -351,7 +351,7 @@
     <div class="top-text">
       <p class="eyebrow">REDEC 5 - Sul I · Defesa Civil</p>
       <h1>Painel de Planos de Contingência</h1>
-      <p class="sub">Sincronizado manualmente em <b>19/06/2026</b> · fonte: pasta <b>03 - PLANCON REDEC 5 SUL I - ORIGINAIS</b> no Google Drive</p>
+      <p class="sub" id="syncSubline">Aguardando sincronização com a planilha-manifesto…</p>
     </div>
     <div class="year-selector">
       <span class="year-selector-label">Ano de referência</span>
@@ -808,73 +808,8 @@ const GEOJSON = {"type":"FeatureCollection","features":[{"type":"Feature","prope
    DADOS DE ENTREGA (ALL_DATA) — idêntico ao painel original
    ============================================================================ */
 const ALL_DATA = [
-  // Entregas do ciclo corrente (2026) agora vivem exclusivamente na planilha-manifesto,
-  // aba ENTREGAS_PLANCON, editável pela Área Interna do painel (ver loadStoredDeliveriesToAllData).
-  // Histórico 2022-2025 abaixo permanece fixo, sem edição pela interface.
-
-  {ano:2025,municipio:"Barra do Piraí",risco:"Plano geral (PLANCON)",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Barra Mansa",risco:"Deslizamento de grande impacto e alagamento",versao:"2",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Comendador Levy Gasparian",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2025,municipio:"Itatiaia",risco:"Inundações / Deslizamentos / Barragem Furnas",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Paraíba do Sul",risco:"Chuvas intensas / inundações",versao:"—",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Paty do Alferes",risco:"Plano geral (multirrisco)",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Pinheiral",risco:"Plano geral (PLANCON)",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Porto Real",risco:"Deslizamento + inundações",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Quatis",risco:"Incêndio florestal / Barragem / Estiagem / Chuvas",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Resende",risco:"Incêndio em vegetação / Chuvas intensas",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Rio das Flores",risco:"Deslizamentos, inundações e processos geológicos/hidrológicos",versao:"02",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Três Rios",risco:"Estiagem e incêndio florestal",versao:"2",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Valença",risco:"Inundações / Deslizamentos",versao:"—",atualizacao:"2024",status:"ok",link:null},
-  {ano:2025,municipio:"Vassouras",risco:"Deslizamentos, inundações e processos geológicos/hidrológicos",versao:"V09",atualizacao:"20/05/2024",status:"ok",link:null},
-  {ano:2025,municipio:"Volta Redonda",risco:"Plano geral (PLANCON)",versao:"2024/2025",atualizacao:"2024",status:"ok",link:null},
-
-  {ano:2024,municipio:"Barra do Piraí",risco:"Plano geral (PLANCON)",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Barra Mansa",risco:"Deslizamento de grande impacto e alagamento",versao:"1",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Comendador Levy Gasparian",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2024,municipio:"Itatiaia",risco:"Inundações / Deslizamentos",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Paraíba do Sul",risco:"Chuvas intensas / inundações",versao:"—",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Paty do Alferes",risco:"Plano geral (multirrisco)",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Pinheiral",risco:"Plano geral (PLANCON)",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Porto Real",risco:"Deslizamento + inundações",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Quatis",risco:"Incêndio florestal / Barragem",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Resende",risco:"Incêndio em vegetação / Chuvas intensas",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Rio das Flores",risco:"Deslizamentos e inundações",versao:"01",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Três Rios",risco:"Estiagem e incêndio florestal",versao:"1",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Valença",risco:"Inundações / Deslizamentos",versao:"—",atualizacao:"2023",status:"warn",link:null},
-  {ano:2024,municipio:"Vassouras",risco:"Deslizamentos e inundações",versao:"V08",atualizacao:"2023",status:"ok",link:null},
-  {ano:2024,municipio:"Volta Redonda",risco:"Plano geral (PLANCON)",versao:"2023/2024",atualizacao:"2023",status:"ok",link:null},
-
-  {ano:2023,municipio:"Barra do Piraí",risco:"Plano geral (PLANCON)",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Barra Mansa",risco:"Deslizamento de grande impacto e alagamento",versao:"—",atualizacao:"2022",status:"warn",link:null},
-  {ano:2023,municipio:"Comendador Levy Gasparian",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2023,municipio:"Itatiaia",risco:"Inundações / Deslizamentos",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Paraíba do Sul",risco:"Chuvas intensas / inundações",versao:"—",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Paty do Alferes",risco:"Plano geral (multirrisco)",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Pinheiral",risco:"Plano geral (PLANCON)",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Porto Real",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2023,municipio:"Quatis",risco:"Incêndio florestal",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Resende",risco:"Chuvas intensas",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Rio das Flores",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2023,municipio:"Três Rios",risco:"Estiagem e incêndio florestal",versao:"1",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Valença",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2023,municipio:"Vassouras",risco:"Deslizamentos e inundações",versao:"V07",atualizacao:"2022",status:"ok",link:null},
-  {ano:2023,municipio:"Volta Redonda",risco:"Plano geral (PLANCON)",versao:"2022/2023",atualizacao:"2022",status:"ok",link:null},
-
-  {ano:2022,municipio:"Barra do Piraí",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Barra Mansa",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Comendador Levy Gasparian",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Itatiaia",risco:"Inundações / Deslizamentos / Barragem Furnas",versao:"002-2021",atualizacao:"08/2021",status:"ok",link:null},
-  {ano:2022,municipio:"Paraíba do Sul",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Paty do Alferes",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Pinheiral",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Porto Real",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Quatis",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Resende",risco:"Chuvas intensas",versao:"2021/2022",atualizacao:"2021",status:"ok",link:null},
-  {ano:2022,municipio:"Rio das Flores",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Três Rios",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Valença",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
-  {ano:2022,municipio:"Vassouras",risco:"Deslizamentos e inundações",versao:"V06",atualizacao:"2021",status:"ok",link:null},
-  {ano:2022,municipio:"Volta Redonda",risco:"—",versao:"—",atualizacao:"—",status:"bad",link:null},
+  // Todas as entregas (ciclos 2022–2026) vivem na planilha-manifesto,
+  // aba ENTREGAS, e são carregadas via loadStoredDeliveriesToAllData().
 ];
 
 const REDEC = [
@@ -903,503 +838,9 @@ const QUALITY_CRITERIA = [
   {id:8, short:"Realização de simulados (registro)", full:"Realização de exercícios simulados de seus Planos de Contingência, indicando o tipo de simulado e se houve a participação dos órgãos setoriais do município (Secretarias)."},
 ];
 
-const QUALITY_DATA = {
-  "Barra Mansa": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLACON Risco Geológico e Hidrológico — revisão 02, 16/07/2024",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano identifica ampla rede institucional, incluindo Prefeitura, Ordem Pública, Assistência Social, Saúde, Educação, Procuradoria, Meio Ambiente, Habitação, SAAE, CBMERJ, Conselho Tutelar, PMERJ e Polícia Civil, além de possuir seções de atribuições gerais e específicas."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "O plano padroniza monitoramento, alerta, alarme e resposta, mas não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Há previsão de exercícios simulados conjuntos uma vez ao ano, sob coordenação da COMPDEC, com relatório final. A participação direta da população não fica claramente descrita."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "O plano lista áreas de risco geológico e hidrológico e menciona instalações e percursos previstos nos anexos, mas não apresenta matriz clara por área de risco com rota de fuga, ponto seguro e abrigo."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Há ações de socorro, primeiros socorros, atendimento pré-hospitalar, assistência às vítimas e atendimento a grupos com necessidades especiais, mas não foi identificado protocolo psicológico específico."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há cadastramento no bloco de assistência às vítimas e estrutura de órgãos envolvidos, mas não foi identificado cadastro prévio formal de equipes técnicas e voluntários."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "Existe item de recebimento, organização e distribuição de doações, mas sem localização formal do centro de recebimento ou triagem."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de simulados anuais, mas não há registro de simulado realizado, data, tipo, órgãos participantes ou relatório pós-simulado."
-      }
-    }
-  },
-  "Itatiaia": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "Conjunto de PLANCONs setoriais 2025 — alagamentos, inundações, deslizamentos, barragem, vendavais e Maringá/Maromba",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "Os planos apresentam página de assinaturas com secretarias, Defesa Civil, Guarda Municipal, REDEC Sul I, PABM e demais órgãos, além de atribuições gerais e específicas."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Há monitoramento por boletins meteorológicos, níveis de rios, acionamentos por telefone, mensagens e comunicação visual; no caso de barragem, há articulação com premissas do PAE/Furnas. Não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Os planos preveem exercícios simulados conjuntos duas vezes ao ano, sob coordenação da Defesa Civil Municipal, mas a participação direta da população não fica claramente descrita."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "Há menção a áreas de evacuação, rotas de fuga, pontos de encontro, abrigos e, no plano de barragem, pontos de encontro e locais físicos de abrigamento. Ainda assim, a localização consolidada das rotas e pontos seguros não está plenamente demonstrada para todos os riscos."
-      },
-      "5": {
-        "status": "ok",
-        "texto": "Os planos atribuem à Saúde remoção de acidentados, inspeção sanitária, atendimento médico-hospitalar, triagem e ações básicas de saúde, além de prever psicólogos para abrigos e apoio às famílias de vítimas fatais."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há cadastramento em seções de assistência às vítimas e menção a servidores/voluntários em pontos estratégicos, mas sem cadastro formal prévio de equipes técnicas e voluntários."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "Há seção de recebimento, organização e distribuição de doações e previsão de depósito/central de distribuição, porém a localização nominal dos centros não está suficientemente definida."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de simulados, mas não há registro de execução, tipo, data ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  },
-  "Paraíba do Sul": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCONs 2025/2026 — Incêndio Florestal e Chuvas Intensas/Inundações",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "Há atribuições gerais e específicas, estrutura organizacional de resposta, comando, assessoria do comando, planejamento, operações, logística e finanças."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "O plano trata de monitoramento, alerta, alarme e comunicação, mas não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Há previsão de exercícios simulados conjuntos duas vezes ao ano, com relatório final. A participação direta da população não aparece de forma suficientemente explícita."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "O plano informa uso de instalações e percursos previstos no planejamento/anexos e possui seção de abrigos, mas não demonstra uma matriz clara de rota de fuga → ponto seguro → abrigo para cada área de risco."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "O documento contempla primeiros socorros, atendimento pré-hospitalar, atendimento médico e cirúrgico de urgência e atendimento a grupos com necessidades especiais, mas não foi identificado protocolo psicológico específico."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há diretrizes para treinamento de voluntários e capacitação de recursos humanos, mas não foi identificado cadastro formal prévio com contatos e funções."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "O plano contempla recebimento, organização e distribuição de doações, mas não foi identificada localização formal de centro de recebimento/distribuição."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de simulados, mas não há registro de simulado realizado, tipo, data ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  },
-  "Paty do Alferes": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "Plano Municipal de Contingência para Enfrentamento de Desastres Naturais 2025/2026",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano apresenta ações de proteção e defesa civil, procedimentos por tipo de desastre e atribuições específicas dos envolvidos, com acionamento de Defesa Civil, Corpo de Bombeiros, Guarda Civil Municipal, Meio Ambiente, serviços públicos e demais órgãos."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Descreve monitoramento por pluviômetros, estação hidrológica, CEMADEN, redes sociais, WhatsApp e comunicação sonora por veículos da Defesa Civil. Não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "bad",
-        "texto": "Não foi identificada seção com organização de simulados de evacuação, periodicidade, metodologia ou participação da população."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "Há pontos de encontro e abrigo provisório com endereço, destinação, zoneamento e coordenadas, mas sem detalhamento suficiente de rotas entre áreas de risco, pontos seguros e abrigos."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "O plano trata de socorro, assistência às vítimas, acolhimento e assistência humanitária, mas não foi identificado protocolo médico-hospitalar e psicológico estruturado."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há menção à participação de entidades do terceiro setor, ONGs, apoio voluntário, COMDEC e NUPDEC, mas não há cadastro formal prévio com função, contato, disponibilidade e área de atuação."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "Há previsão de distribuição de material de assistência humanitária aos afetados carentes, mas sem localização formal de centro de recebimento, triagem, armazenamento e distribuição."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Não há registro de simulado realizado, tipo de exercício, data, órgãos participantes ou relatório pós-simulado."
-      }
-    }
-  },
-  "Pinheiral": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCON 2025/2026 — versão 1, atualização 03/2025",
-    "criterios": {
-      "1": {
-        "status": "warn",
-        "texto": "O plano possui seções de atribuições e comando/controle, mas a distribuição de responsabilidades por órgão não aparece tão detalhada quanto nos modelos com matriz de atividade x responsabilidade."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Cita a exigência legal de sistemas de alerta com atenção aos radioamadores, mas o fluxo operacional se concentra no 199, contatos da Defesa Civil, vistorias e acionamento de equipes, sem protocolo específico com radioamadores."
-      },
-      "3": {
-        "status": "bad",
-        "texto": "Não foi identificada seção estruturada com organização de simulados, periodicidade, metodologia ou participação da população."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "Há seção de evacuação, abrigamento e fluxo para remoção de famílias, mas não foi identificado detalhamento completo de rotas, pontos seguros e abrigos por área de risco."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Possui seções de socorro, atendimento pré-hospitalar e atendimento médico/cirúrgico de urgência; apesar de citar a exigência legal de atendimento psicológico, não operacionaliza protocolo específico."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há cadastramento de famílias/afetados e acionamento de equipes, mas não foi identificado cadastro formal de equipes técnicas e voluntários com função, contato e disponibilidade."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "Há seção de recebimento, organização e distribuição de doações, mas não foi identificada localização formal de centro de recebimento e triagem."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Não há registro de simulado realizado, tipo, data, secretarias participantes ou relatório pós-simulado."
-      }
-    }
-  },
-  "Porto Real": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCON Deslizamento 2025 / Operação Verão",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano identifica órgãos signatários e apresenta atribuições específicas para Ordem Pública, Defesa Civil, Obras, Saúde e Assistência Social."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Há monitoramento, alerta e alarme, mas não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "O plano prevê exercícios simulados conjuntos uma ou mais vezes ao ano, com relatório final, mas não explicita claramente a participação da população."
-      },
-      "4": {
-        "status": "ok",
-        "texto": "O documento possui anexo de rotas de fuga e zonas de autossalvamento, além de orientar uso de instalações e percursos previstos no planejamento."
-      },
-      "5": {
-        "status": "ok",
-        "texto": "A Saúde tem atribuições para atendimento emergencial e o documento traz anexo específico com fluxograma de atendimento psicológico à população atingida."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há cadastramento de famílias e atuação de secretarias, mas não foi identificado cadastro prévio formal de equipes técnicas e voluntários."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "Há estratégia para divulgação do local de arrecadação, levantamento de itens, armazenamento, planilha de controle, transporte e distribuição, mas sem localização fixa previamente definida."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de simulados, mas não há registro de simulado realizado, data, tipo ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  },
-  "Quatis": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCONs 2025/2026 — Chuvas Intensas, Estiagem, Incêndio Florestal e Barragem",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "Os planos apresentam comissão de elaboração, página de assinaturas dos envolvidos, atribuições gerais, atribuições específicas e matriz de atividade/responsabilidade."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Os documentos tratam de monitoramento, alerta, alarme, acionamento de recursos e comunicação à população. Não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Há previsão de exercícios simulados conjuntos uma vez ao ano, sob coordenação da COMDEC, com relatório final, mas a participação direta da população não está claramente descrita."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "O plano de barragem apresenta rotas de evacuação, pontos de encontro, pontos de apoio e setores de deslocamento; os demais planos trazem abrigos temporários e pontos de apoio. A estrutura completa não aparece igualmente detalhada para todos os riscos."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Há rede de saúde em anexo e previsão de assistência social/abrigos, mas não foi identificado protocolo específico de atendimento psicológico aos atingidos."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Os planos trazem levantamento de recursos humanos e plano de chamada, mas não foi identificado cadastro específico de voluntários para desastres."
-      },
-      "7": {
-        "status": "bad",
-        "texto": "Não foi identificada localização de centro de recebimento de doações, triagem, armazenamento e estratégia de distribuição de suprimentos."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de simulados anuais, mas não há registro de simulados realizados, tipo, data, participação das secretarias ou relatório pós-exercício."
-      }
-    }
-  },
-  "Resende": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCONs 2025 — Chuvas Intensas e Incêndio em Vegetação",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano apresenta diversas autoridades e órgãos envolvidos, incluindo Prefeitura, Defesa Civil, CBMERJ, PMERJ, REDEC, secretarias municipais, Guarda Civil e demais setores, além de responsabilidades por fase."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "O alerta é feito por ligações, mensagens, pontos estratégicos, servidores, voluntários, meios de comunicação em massa e veículos com sinais visuais/sonoros. Não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Há capacitação para agentes e população, mas não foi identificado registro claro de simulados com participação popular estruturada."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "O plano prevê posto de comando, área de espera, evacuação, rotas de fuga, pontos de encontro e abrigos, mas não apresenta relação territorial consolidada por área de risco."
-      },
-      "5": {
-        "status": "ok",
-        "texto": "A Secretaria de Saúde deve remover acidentados, prestar socorro médico-hospitalar, realizar triagem e deslocar equipes para a área atingida; a Assistência Social contempla auxílio psicológico às vítimas."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há atuação de servidores e voluntários em pontos estratégicos e capacitação, mas não foi identificado cadastro formal prévio de equipes técnicas e voluntários."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "O plano prevê abrigos, doações e assistência às vítimas como funções de resposta, mas não foi identificada localização formal de centro de recebimento/triagem de doações."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Não há registro de simulado realizado, data, tipo, relatório ou participação efetiva das secretarias."
-      }
-    }
-  },
-  "Rio das Flores": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCON 2025 — deslizamentos, inundações bruscas e processos correlatos",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano possui página de assinaturas com Prefeitura, Defesa Civil, Obras, Saúde, Assistência Social, Meio Ambiente, Habitação, Câmara, Exército e CBMERJ, além de atribuições gerais e específicas."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "A finalidade padroniza monitoramento, alerta, alarme e resposta, mas não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Há previsão de exercícios simulados conjuntos uma ou mais vezes ao ano, sob coordenação da Defesa Civil, com relatório final; a participação direta da população não fica clara."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "O documento indica uso de instalações e percursos previstos no planejamento e anexos, mas não foi identificada relação clara de rota de fuga, ponto seguro e abrigo por área de risco."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Há atribuições para Secretaria de Saúde e Assistência Social, mas não foi identificado protocolo psicológico estruturado."
-      },
-      "6": {
-        "status": "bad",
-        "texto": "Não foi identificado cadastro prévio de equipes técnicas e voluntários para atuação em desastre."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "O plano menciona ajuda humanitária e padronização da resposta, mas não foi identificada localização de centro de recebimento e estratégia detalhada de distribuição."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de exercícios, mas não há registro de simulado realizado, tipo, data ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  },
-  "Três Rios": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCON 2025 — Estiagem e Incêndio Florestal, versão 3",
-    "criterios": {
-      "1": {
-        "status": "warn",
-        "texto": "O plano lista autoridades, secretarias municipais, SAAETRI e Subsecretaria de Defesa Civil, mas não apresenta matriz operacional detalhada por fase de desastre."
-      },
-      "2": {
-        "status": "bad",
-        "texto": "Não foi identificado sistema de alerta operacional articulado com monitoramento nem menção a radioamadores."
-      },
-      "3": {
-        "status": "bad",
-        "texto": "Não foi identificada previsão estruturada de simulados com participação da população."
-      },
-      "4": {
-        "status": "bad",
-        "texto": "Não foram identificadas rotas de fuga, pontos seguros ou abrigos estruturados no documento analisado."
-      },
-      "5": {
-        "status": "bad",
-        "texto": "Não foi identificado protocolo de atendimento médico-hospitalar nem psicológico aos atingidos."
-      },
-      "6": {
-        "status": "bad",
-        "texto": "Não foi identificado cadastro formal de equipes técnicas ou voluntários."
-      },
-      "7": {
-        "status": "bad",
-        "texto": "Não foi identificado centro de recebimento, triagem ou estratégia de distribuição de doações."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Não há registro de simulado realizado, tipo, data ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  },
-  "Valença": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCONs 2025 — Deslizamentos e Inundações",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "Os planos identificam órgãos signatários e envolvidos, incluindo Prefeitura, Defesa Civil, Serviços Públicos, Obras, Saúde, Assistência Social, CBMERJ, Exército e Câmara Municipal, com distribuição de ações de resposta."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Há padronização de monitoramento, alerta, alarme e resposta, mas não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "Os planos preveem exercícios simulados conjuntos uma ou mais vezes ao ano, com relatório final, porém a participação da população não aparece de forma clara."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "O plano de deslizamentos informa áreas de risco e locais de abrigamento por localidade, mas não detalha completamente rotas de deslocamento e pontos seguros."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Há participação da Saúde, assistência social, manejo de mortos, atendimento a grupos com necessidades especiais e suporte por secretarias, mas sem protocolo psicológico específico."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há cadastramento de atingidos após o sinistro por assistência social e saúde, mas não foi identificado cadastro prévio de equipes técnicas e voluntários."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "Recebimento, organização e distribuição de doações são acompanhados pela Assistência Social, mas sem centro específico de recebimento/triagem localizado."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Há previsão de exercícios simulados, mas não há registro de realização, tipo, data ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  },
-  "Vassouras": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "PLANCON 2026/2027",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano apresenta órgãos envolvidos, contatos, estrutura de resposta e atribuições por secretaria/órgão, incluindo seção específica de atribuições."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "Há previsão de monitoramento, alerta, alarme e resposta, inclusive telefonia celular e radiocomunicação, mas não foi identificada menção específica a radioamadores."
-      },
-      "3": {
-        "status": "warn",
-        "texto": "O plano prevê exercícios simulados conjuntos uma vez por ano, sob coordenação da Defesa Civil, com relatório. A participação da população não aparece de forma clara."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "Menciona posto de comando, área de espera, áreas de evacuação, rotas de fuga, pontos de encontro e abrigo, mas a localização detalhada não está suficientemente estruturada."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Há atendimento pré-hospitalar, médico de urgência e referência hospitalar, mas não foi identificado protocolo específico de atendimento psicológico/psicossocial."
-      },
-      "6": {
-        "status": "warn",
-        "texto": "Há menção a cadastramento e necessidade de cadastrar voluntários, mas sem detalhar sistema formal prévio de cadastro de equipes técnicas e voluntários."
-      },
-      "7": {
-        "status": "warn",
-        "texto": "O recebimento, organização e distribuição de doações são atribuídos à Assistência Social, mas sem localização definida de centro de recebimento/distribuição."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "O plano prevê simulados futuros, mas não apresenta registro de simulado realizado, tipo, data ou participação efetiva das secretarias."
-      }
-    }
-  },
-  "Volta Redonda": {
-    "analisadoEm": "19/06/2026",
-    "fonte": "Plano de Contingência 2024/2025",
-    "criterios": {
-      "1": {
-        "status": "ok",
-        "texto": "O plano apresenta órgãos do sistema de Defesa Civil e respectivas atribuições, incluindo Defesa Civil, IPPU, Meio Ambiente, Guarda Municipal, Ação Comunitária, Serviços Públicos, Obras, Vigilância Sanitária, hospitais, ambulâncias, SAAE, PMERJ, INEA, CBMERJ, PRF e outros."
-      },
-      "2": {
-        "status": "warn",
-        "texto": "O plano menciona alerta e monitoramento para alagamentos, mas não foi identificada articulação específica com radioamadores."
-      },
-      "3": {
-        "status": "bad",
-        "texto": "Não foi identificada organização de exercícios simulados com participação da população."
-      },
-      "4": {
-        "status": "warn",
-        "texto": "Apresenta planejamento preventivo, abrigo provisório e locais para triagem, primeiro atendimento e abrigo provisório, mas sem rotas de deslocamento e pontos seguros organizados por cenário."
-      },
-      "5": {
-        "status": "warn",
-        "texto": "Inclui hospitais e central de ambulâncias para urgência/emergência, mas não foi identificado protocolo de atendimento psicológico."
-      },
-      "6": {
-        "status": "bad",
-        "texto": "Não foi identificado cadastro formal de equipes técnicas ou voluntários."
-      },
-      "7": {
-        "status": "bad",
-        "texto": "Não foi identificado centro de recebimento, triagem e estratégia de distribuição de doações."
-      },
-      "8": {
-        "status": "bad",
-        "texto": "Não há registro de simulado realizado, tipo, data ou participação efetiva dos órgãos setoriais."
-      }
-    }
-  }
-};
-
+const QUALITY_DATA = {};
+// Análises por município carregadas da planilha-manifesto via syncManifestFromAppsScript.
+// Não editar manualmente — use a Área Interna do painel ou importe JSON pela aba Análises.
 /* ============================================================================
    HISTÓRICO DE VERSÕES — base para comparação antes/depois por município
    ============================================================================
@@ -1447,7 +888,7 @@ function evolutionLabel(delta){
   return {symbol:"↓↓", cls:"down", text:"Regressão forte"};
 }
 
-const DELIVERY_EDITABLE_YEAR = 2026; // único ano editável pela Área Interna; anos anteriores ficam congelados em ALL_DATA
+const DELIVERY_EDITABLE_YEAR = 2026; // ciclo corrente; todos os anos são carregados da planilha via loadStoredDeliveriesToAllData
 
 let ANOS = [...new Set(ALL_DATA.map(d=>d.ano))].sort((a,b)=>b-a);
 let anoAtivo = ANOS[0];
@@ -2193,6 +1634,7 @@ async function syncManifestFromAppsScript(silent=false){
     const mergedDeliveries = mergeDeliveriesById(getStoredDeliveries(), incomingDeliveries);
     setStoredDeliveries(mergedDeliveries);
     refreshAfterManifestLoad();
+    updateSyncSubline(silent ? "auto" : "manual");
     const msg = `Sincronização concluída: ${incoming.length} análise(s), ${incomingObs.length} observação(ões) e ${incomingDeliveries.length} entrega(s) carregada(s) da planilha-manifesto.`;
     setSyncStatus(msg);
     if(!silent) alert(msg);
@@ -3063,9 +2505,36 @@ document.addEventListener("keydown", (e)=>{
 
 
 /* ============================================================================
+   SUBTÍTULO DE SINCRONIZAÇÃO — data e modo atualizados dinamicamente
+   ============================================================================ */
+const SYNC_SUBLINE_KEY = "plancon_last_sync_info";
+
+function updateSyncSubline(modo = "auto"){
+  const agora = new Date();
+  const data = agora.toLocaleDateString("pt-BR");
+  const hora = agora.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+  const tipo = modo === "manual" ? "manualmente" : "automaticamente";
+  const texto = `Sincronizado ${tipo} em <b>${data}</b> às <b>${hora}</b> · fonte: planilha-manifesto REDEC 5 Sul I`;
+  const el = document.getElementById("syncSubline");
+  if(el) el.innerHTML = texto;
+  try { localStorage.setItem(SYNC_SUBLINE_KEY, JSON.stringify({data, hora, tipo})); } catch(e){}
+}
+
+function restoreSyncSubline(){
+  try {
+    const saved = localStorage.getItem(SYNC_SUBLINE_KEY);
+    if(!saved) return;
+    const {data, hora, tipo} = JSON.parse(saved);
+    const el = document.getElementById("syncSubline");
+    if(el) el.innerHTML = `Sincronizado ${tipo} em <b>${data}</b> às <b>${hora}</b> · fonte: planilha-manifesto REDEC 5 Sul I`;
+  } catch(e){}
+}
+
+/* ============================================================================
    INIT
    ============================================================================ */
 async function initPainel(){
+  restoreSyncSubline();
   loadStoredAnalysesToHistory();
   loadStoredDeliveriesToAllData();
   loadStoredObservationsToAllData();
