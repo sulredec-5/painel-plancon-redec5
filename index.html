@@ -2416,6 +2416,7 @@ async function removeAnalysis(id){
   // Sinaliza exclusão para a planilha
   syncAnalysisDeleteToAppsScript(id);
 }
+async function syncAnalysisToAppsScript(analysis){
   const cfg = getAppsScriptConfig();
   if(!cfg.url) return {sent:false, message:"não sincronizado: integração não configurada"};
   const payload = {
