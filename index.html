@@ -1566,7 +1566,8 @@ document.addEventListener("keydown", (e)=>{
 const UPLOAD_PASSWORD_HASH = "827682e07a5209e523ec39157e2b2bbf6bd5181a6a62e29de4302634892c33b0"; // senha inicial: REDEC5@2026
 const UPLOAD_STORAGE_KEY = "redec5_plancon_upload_queue_v2";
 const APPS_SCRIPT_CONFIG_KEY = "redec5_plancon_apps_script_config_v1";
-const ANALYSIS_STORAGE_KEY = "redec5_plancon_analysis_history_v1";
+const ANALYSIS_STORAGE_KEY  = "redec5_plancon_analysis_history_v1";
+const ANALYSIS_CLEARED_KEY  = "redec5_plancon_analyses_cleared_ids"; // IDs de análises explicitamente deletadas
 const GOOGLE_DRIVE_CONFIG = {
   enabled: false,
   clientId: "",   // preencher quando o OAuth do Google Workspace estiver configurado
@@ -1620,9 +1621,18 @@ async function jsonpRequest(url){
   }
 }
 function mergeById(localItems, incomingItems){
+  // Carrega tombstone: IDs de análises que o usuário explicitamente deletou.
+  // O sync nunca restaura um item cujo ID esteja nessa lista.
+  let clearedIds;
+  try{ clearedIds = new Set(JSON.parse(localStorage.getItem(ANALYSIS_CLEARED_KEY) || "[]")); }catch(e){ clearedIds = new Set(); }
+
   const map = new Map();
   (localItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, item); });
-  (incomingItems || []).forEach(item=>{ if(item && item.id) map.set(item.id, {...map.get(item.id), ...item, syncStatus:item.syncStatus || "carregada da planilha"}); });
+  (incomingItems || []).forEach(item=>{
+    if(!item || !item.id) return;
+    if(clearedIds.has(item.id)) return; // explicitamente deletado — não restaurar da planilha
+    map.set(item.id, {...map.get(item.id), ...item, syncStatus:item.syncStatus || "carregada da planilha"});
+  });
   return Array.from(map.values()).sort((a,b)=>String(a.dataAnalise||"").localeCompare(String(b.dataAnalise||"")));
 }
 function mergeObservationsById(localItems, incomingItems){
@@ -2332,6 +2342,9 @@ function dateSortKey(value){
   return s;
 }
 function loadStoredAnalysesToHistory(){
+  // Limpa o histórico em memória antes de reconstruí-lo a partir do localStorage.
+  // Garante que remoções de análises sejam refletidas sem precisar recarregar a página.
+  Object.keys(QUALITY_HISTORY).forEach(k => delete QUALITY_HISTORY[k]);
   getStoredAnalyses().forEach(addAnalysisToHistory);
 }
 function renderAnalysisQueue(){
@@ -2464,11 +2477,23 @@ function exportAnalysesManifest(){
   a.href = url; a.download = "manifesto_analises_plancon_redec5.json"; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
 }
 function clearAnalyses(){
-  const msg = "Esta ação limpa somente as análises técnicas salvas localmente neste navegador. A planilha-manifesto, os arquivos do Drive e o diagnóstico inicial embutido serão preservados. Para confirmar, digite LIMPAR.";
-  if(prompt(msg) === "LIMPAR"){
-    localStorage.removeItem(ANALYSIS_STORAGE_KEY);
-    location.reload();
-  }
+  const items = getStoredAnalyses();
+  const msg = `Esta ação remove as ${items.length} análise(s) técnicas salvas localmente e impede que a planilha-manifesto as restaure em sincronizações futuras.\n\nAnálises cadastradas APÓS esta limpeza continuarão aparecendo normalmente.\n\nPara confirmar, digite LIMPAR.`;
+  if(prompt(msg) !== "LIMPAR") return;
+
+  // Salva tombstone: IDs de todas as análises sendo deletadas
+  const existingCleared = JSON.parse(localStorage.getItem(ANALYSIS_CLEARED_KEY) || "[]");
+  const newCleared = [...new Set([...existingCleared, ...items.map(a=>a.id)])];
+  localStorage.setItem(ANALYSIS_CLEARED_KEY, JSON.stringify(newCleared));
+  localStorage.removeItem(ANALYSIS_STORAGE_KEY);
+
+  // Aplica limpeza em memória sem precisar recarregar
+  Object.keys(QUALITY_HISTORY).forEach(k => delete QUALITY_HISTORY[k]);
+  renderAnalysisQueue();
+  renderQualityMeta();
+  renderQualityMatrix();
+  renderCompareCards();
+  renderCompareMunicipioStatus();
 }
 function setupAnalysisTabs(){
   document.querySelectorAll(".analysis-tab").forEach(btn=>{
