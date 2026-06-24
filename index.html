@@ -357,6 +357,7 @@
       <p class="eyebrow">REDEC 5 - Sul I · Defesa Civil</p>
       <h1>Painel de Planos de Contingência</h1>
       <p class="sub" id="syncSubline">Aguardando sincronização com a planilha-manifesto…</p>
+      <div id="pendingAnalysisAlert" style="display:none;margin-top:6px;font-size:12px;color:#B5650A;cursor:pointer;" onclick="openInternalArea('analises')">⏳ <span id="pendingAnalysisText"></span> — clique para abrir a área de análises</div>
     </div>
     <div class="year-selector">
       <span class="year-selector-label">Ano de referência</span>
@@ -569,6 +570,10 @@
               <label for="deliveryResponsible">Responsável pelo registro</label>
               <input type="text" id="deliveryResponsible" placeholder="Nome ou e-mail institucional">
             </div>
+            <div class="upload-field full">
+              <label for="deliveryObs">Observação operacional <span style="font-weight:400;font-size:11px;color:var(--muted)">(opcional — aparece no mapa e na tabela, substitui a anterior)</span></label>
+              <textarea id="deliveryObs" placeholder="Ex.: Nova versão em confecção conforme reunião presencial IntegraCON."></textarea>
+            </div>
           </div>
           <div class="upload-actions">
             <button class="upload-action-btn" id="deliveryRegisterBtn">Salvar entrega</button>
@@ -581,103 +586,39 @@
             </table>
           </div>
 
-          <div class="upload-note"><strong>Registro institucional:</strong> registre novas versões de PLANCON mantendo o arquivo original na pasta oficial <strong>03 - PLANCON REDEC 5 SUL I - ORIGINAIS</strong> no Google Drive do trabalho. O painel salva os metadados na planilha-manifesto e classifica o envio como <strong>aguardando análise</strong> até a validação técnica.<span class="drive-config-badge">Manifesto institucional</span></div>
+          <h3 class="internal-section-title">Integração com a planilha-manifesto</h3>
           <div class="upload-form">
             <div class="upload-field full integration-field">
-              <label for="appsScriptUrl">Integração Google Sheets / Apps Script</label>
+              <label for="appsScriptUrl">URL do Web App (Apps Script)</label>
               <div class="row-mini">
                 <input type="url" id="appsScriptUrl" placeholder="Cole aqui a URL do Web App do Apps Script">
                 <button type="button" class="upload-action-btn secondary" id="saveAppsScriptConfigBtn">Salvar</button>
                 <button type="button" class="upload-action-btn secondary" id="syncManifestBtn">Sincronizar agora</button>
               </div>
               <input type="password" id="appsScriptToken" placeholder="Token opcional de integração" style="margin-top:8px">
-              <div class="upload-inline-hint" id="syncManifestStatus">Quando configurado, cada registro será salvo também na planilha-manifesto. Ao abrir o painel, as análises da planilha serão carregadas automaticamente.</div>
-            </div>
-            <div class="upload-field">
-              <label for="uploadMunicipio">Município</label>
-              <select id="uploadMunicipio"></select>
-            </div>
-            <div class="upload-field">
-              <label for="uploadLabel">Tipo de envio</label>
-              <select id="uploadLabel">
-                <option value="Nova versão pós-orientação">Nova versão pós-orientação</option>
-                <option value="Pós-IntegraCON">Pós-IntegraCON</option>
-                <option value="Correção pontual">Correção pontual</option>
-                <option value="Envio inicial tardio">Envio inicial tardio</option>
-              </select>
-            </div>
-            <div class="upload-field">
-              <label for="uploadDocDate">Data do documento</label>
-              <input type="date" id="uploadDocDate">
-            </div>
-            <div class="upload-field">
-              <label for="uploadFiles">Arquivos locais (uso excepcional)</label>
-              <input type="file" id="uploadFiles" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.html,.txt,application/pdf">
-              <div class="upload-inline-hint">Uso excepcional: utilize apenas quando o arquivo ainda não estiver disponível no Google Drive institucional.</div>
-            </div>
-            <div class="upload-field">
-              <label for="uploadDriveUrl">Arquivo no Google Drive</label>
-              <div class="row-mini">
-                <input type="url" id="uploadDriveUrl" placeholder="Cole o link do Drive ou use o seletor">
-                <button type="button" class="upload-action-btn secondary" id="drivePickerBtn">Drive</button>
-              </div>
-              <div class="upload-inline-hint">Recomendado para conta institucional: mantém o arquivo original no Drive.</div>
-            </div>
-            <div class="upload-field">
-              <label for="uploadDriveName">Nome do arquivo no Drive</label>
-              <input type="text" id="uploadDriveName" placeholder="Ex.: PLANCON Barra Mansa revisado 2026.pdf">
-            </div>
-            <div class="upload-field">
-              <label for="uploadResponsible">Responsável pelo registro</label>
-              <input type="text" id="uploadResponsible" placeholder="Nome ou e-mail institucional">
-            </div>
-            <div class="upload-field full">
-              <label for="uploadNotes">Observações</label>
-              <textarea id="uploadNotes" placeholder="Ex.: versão revisada após orientações; substituir diagnóstico anterior somente após análise técnica."></textarea>
+              <div class="upload-inline-hint" id="syncManifestStatus">Quando configurado, cada registro é salvo automaticamente na planilha-manifesto e sincronizado ao abrir o painel.</div>
             </div>
           </div>
           <div class="upload-actions">
-            <button class="upload-action-btn" id="uploadRegisterBtn">Registrar envio</button>
             <button class="upload-action-btn secondary" id="uploadExportBtn">Exportar manifesto JSON</button>
-            <button class="upload-action-btn danger" id="uploadClearBtn">Limpar registros locais</button>
           </div>
-          <div class="upload-table-wrap">
-            <table class="upload-table">
-              <thead><tr><th>Data do registro</th><th>Município</th><th>Tipo</th><th>Arquivos</th><th>Status</th></tr></thead>
-              <tbody id="uploadQueueBody"></tbody>
-            </table>
-          </div>
+          <!-- Elementos ocultos mantidos para compatibilidade com funções JS existentes -->
+          <select id="uploadMunicipio" style="display:none"></select>
+          <input type="hidden" id="uploadLabel">
+          <input type="hidden" id="uploadDocDate">
+          <input type="hidden" id="uploadFiles">
+          <input type="hidden" id="uploadDriveUrl">
+          <input type="hidden" id="uploadDriveName">
+          <input type="hidden" id="uploadResponsible">
+          <textarea id="uploadNotes" style="display:none"></textarea>
+          <div id="uploadQueueBody" style="display:none"></div>
 
-          <h3 class="internal-section-title">Observações de entrega</h3>
-          <div class="upload-note"><strong>Observação curta:</strong> use este campo para registrar avisos operacionais sobre a entrega do PLANCON de um município/ano (ex.: "Nova versão em confecção conforme reunião presencial IntegraCON"). A observação aparece no mapa e na tabela de entregas, junto ao status do município. Cada município/ano tem apenas <strong>uma observação ativa</strong> — salvar de novo substitui a anterior.</div>
-          <div class="upload-form">
-            <div class="upload-field">
-              <label for="obsMunicipio">Município</label>
-              <select id="obsMunicipio"></select>
-            </div>
-            <div class="upload-field">
-              <label for="obsAno">Ano</label>
-              <select id="obsAno"></select>
-            </div>
-            <div class="upload-field">
-              <label for="obsResponsible">Responsável pelo registro</label>
-              <input type="text" id="obsResponsible" placeholder="Nome ou e-mail institucional">
-            </div>
-            <div class="upload-field full">
-              <label for="obsText">Observação</label>
-              <textarea id="obsText" placeholder="Ex.: Nova versão em confecção conforme reunião presencial IntegraCON."></textarea>
-            </div>
-          </div>
-          <div class="upload-actions">
-            <button class="upload-action-btn" id="obsRegisterBtn">Salvar observação</button>
-            <button class="upload-action-btn secondary" id="obsClearFieldBtn">Limpar campo (remover observação)</button>
-          </div>
-          <div class="upload-table-wrap">
-            <table class="upload-table">
-              <thead><tr><th>Município</th><th>Ano</th><th>Observação</th><th>Responsável</th><th>Atualizado em</th></tr></thead>
-              <tbody id="obsQueueBody"></tbody>
-            </table>
-          </div>
+          <!-- Elementos de obs mantidos ocultos para compatibilidade com JS existente -->
+          <select id="obsMunicipio" style="display:none"></select>
+          <select id="obsAno" style="display:none"></select>
+          <input type="hidden" id="obsResponsible">
+          <textarea id="obsText" style="display:none"></textarea>
+          <div id="obsQueueBody" style="display:none"></div>
 
           <h3 class="internal-section-title">Inserir análise técnica</h3>
           <div class="upload-note"><strong>Análise estruturada:</strong> após a equipe avaliar o PLANCON pelos 8 critérios, insira o resultado aqui por formulário guiado ou cole um JSON válido gerado/revisado pela equipe. O painel salvará a nova versão analisada, atualizará o histórico do município e liberará a comparação antes vs depois quando houver ao menos duas análises.</div>
@@ -782,9 +723,13 @@ Formato obrigatório:
           </div>
 
           <div class="analysis-panel" id="analysisPanelJson">
+            <div class="upload-field">
+              <label for="analysisJsonMunicipio">Município <span style="font-weight:400;font-size:11px;color:var(--muted)">(obrigatório — sobrescreve o campo do JSON)</span></label>
+              <select id="analysisJsonMunicipio"><option value="">— Selecione o município —</option></select>
+            </div>
             <div class="upload-field full">
               <label for="analysisJsonInput">JSON da análise</label>
-              <textarea id="analysisJsonInput" class="analysis-json-box" placeholder='Cole aqui um JSON válido com municipio, rotulo, dataAnalise, documento, linkDrive, analista, sintese e criterios c1..c8.'></textarea>
+              <textarea id="analysisJsonInput" class="analysis-json-box" placeholder='Cole aqui um JSON válido com rotulo, dataAnalise, documento, linkDrive, analista, sintese e criterios c1..c8. O município será definido pelo seletor acima.'></textarea>
               <div class="upload-inline-hint">Use status apenas entre: <strong>ok</strong>, <strong>warn</strong>, <strong>bad</strong> ou <strong>pending</strong>. O painel valida se os 8 critérios foram informados.</div>
             </div>
             <div class="upload-actions" style="margin-top:12px;">
@@ -1048,8 +993,9 @@ function updateMapColors(){
 function initDonut(){
   const summary = getMunicipioSummary();
   const counts  = {ok:0, outdated:0, warn:0, bad:0};
-  Object.values(summary).forEach(m=>{ if(counts[m.status]!==undefined) counts[m.status]++; });
-  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  // Base: todos os 15 municípios da REDEC — sem entrega cadastrada = "bad"
+  REDEC.forEach(m=>{ const st=(summary[m]||{status:"bad"}).status; if(counts[st]!==undefined) counts[st]++; });
+  const total = REDEC.length;
 
   const segments = [
     {label:"Atualizado",    value:counts.ok,       color:STATUS_COLOR.ok},
@@ -1100,15 +1046,10 @@ function initDonut(){
 }
 
 function renderStats(){
-  const municipiosUnicos=new Set(DATA.map(d=>d.municipio));
-  const statusPorMunicipio={};
-  DATA.forEach(d=>{
-    const cur=statusPorMunicipio[d.municipio];
-    const rank={bad:0,outdated:1,warn:2,ok:3};
-    if(!cur||rank[d.status]<rank[cur]) statusPorMunicipio[d.municipio]=d.status;
-  });
+  const summary = getMunicipioSummary();
   const counts={ok:0,outdated:0,warn:0,bad:0};
-  Object.values(statusPorMunicipio).forEach(s=>{ if(counts[s]!==undefined) counts[s]++; });
+  // Base: todos os 15 municípios da REDEC — sem entrega cadastrada = "bad"
+  REDEC.forEach(m=>{ const st=(summary[m]||{status:"bad"}).status; if(counts[st]!==undefined) counts[st]++; });
   const isHistorico = anoAtivo !== ANOS[0];
   const vigLabel = isHistorico ? `Sem plano vigente (${anoAtivo-1}/${anoAtivo})` : `Sem plano vigente (2025/2026)`;
   const historicoBanner = isHistorico
@@ -1116,7 +1057,7 @@ function renderStats(){
     : "";
   document.getElementById("stats").innerHTML=`
     ${historicoBanner}
-    <div class="stat"><div class="num">${municipiosUnicos.size}</div><div class="label">Municípios na REDEC 5 - Sul I</div></div>
+    <div class="stat"><div class="num">${REDEC.length}</div><div class="label">Municípios na REDEC 5 - Sul I</div></div>
     <div class="stat ok"><div class="num">${counts.ok}</div><div class="label">Atualizados</div></div>
     <div class="stat" style="border-top-color:var(--blue)"><div class="num">${counts.outdated}</div><div class="label">Desatualizados</div></div>
     <div class="stat warn"><div class="num">${counts.warn}</div><div class="label">A verificar</div></div>
@@ -1648,7 +1589,7 @@ function refreshAfterManifestLoad(){
   renderAnalysisQueue();
   renderDeliveryQueue();
   renderObsQueue();
-  renderStats(); renderTable(); updateMapColors(); initDonut(); buildYearBtns(); renderQualityMeta(); renderQualityMatrix(); renderCompareCards(); renderCompareMunicipioStatus();
+  renderStats(); renderTable(); updateMapColors(); initDonut(); buildYearBtns(); renderQualityMeta(); renderQualityMatrix(); renderCompareCards(); renderCompareMunicipioStatus(); renderPendingAnalysisAlert();
 }
 async function syncManifestFromAppsScript(silent=false){
   const cfg = getAppsScriptConfig();
@@ -1722,8 +1663,58 @@ function openInternalModal(){
   populateObsSelectors();
   renderObsQueue();
   populateAnalysisMunicipios();
+  populateAnalysisJsonMunicipios();
   renderAnalysisCriteriaFields();
   renderAnalysisQueue();
+}
+
+// Abre a área interna e opcionalmente rola até uma seção específica
+function openInternalArea(section){
+  openInternalModal();
+  if(section === "analises"){
+    setTimeout(()=>{
+      const el = document.querySelector(".internal-section-title + .upload-note, h3.internal-section-title");
+      const analiseTitle = [...document.querySelectorAll("h3.internal-section-title")]
+        .find(h => h.textContent.includes("análise"));
+      if(analiseTitle) analiseTitle.scrollIntoView({behavior:"smooth", block:"start"});
+    }, 200);
+  }
+}
+
+function populateAnalysisJsonMunicipios(){
+  const sel = document.getElementById("analysisJsonMunicipio");
+  if(sel){
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">— Selecione o município —</option>' +
+      REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
+    if(cur) sel.value = cur;
+  }
+}
+
+// Quando o município é alterado na ficha de entrega, auto-popula a observação existente
+function onDeliveryMunicipioChange(){
+  const municipio = document.getElementById("deliveryMunicipio")?.value;
+  const ano = Number(document.getElementById("deliveryCiclo")?.value) || DELIVERY_EDITABLE_YEAR;
+  if(!municipio) return;
+  const stored = getStoredObservations().find(o => o.municipio === municipio && Number(o.ano) === ano);
+  const obsField = document.getElementById("deliveryObs");
+  if(obsField && stored) obsField.value = stored.observacao || "";
+}
+
+// Atualiza o alerta de planos pendentes de análise no painel principal
+function renderPendingAnalysisAlert(){
+  const summary = getMunicipioSummary();
+  const pending = REDEC.filter(m => {
+    const st = (summary[m] || {status:"bad"}).status;
+    if(st === "bad") return false; // sem plano = não conta como pendente
+    return !latestQualityData(m);  // tem plano mas sem análise
+  });
+  const alert = document.getElementById("pendingAnalysisAlert");
+  const txt   = document.getElementById("pendingAnalysisText");
+  if(!alert || !txt) return;
+  if(pending.length === 0){ alert.style.display="none"; return; }
+  txt.textContent = `${pending.length} município(s) com plano entregue aguardando análise técnica: ${pending.join(", ")}`;
+  alert.style.display = "block";
 }
 function closeInternalModal(){
   document.getElementById("internalModalBackdrop").classList.remove("open");
@@ -2049,12 +2040,13 @@ async function saveDelivery(delivery){
   setStoredDeliveries(items);
   applyDeliveriesToAllData(items);
   renderDeliveryQueue();
-  renderStats(); renderTable(); updateMapColors(); initDonut(); buildYearBtns();
+  renderStats(); renderTable(); updateMapColors(); initDonut(); buildYearBtns(); renderPendingAnalysisAlert();
   const sync = await syncDeliveryToAppsScript(delivery);
   alert(sync.sent ? "Entrega salva e enviada para a planilha." : "Entrega salva localmente. " + sync.message);
 }
 
 async function registerDeliveryFromForm(){
+  const obsText = document.getElementById("deliveryObs")?.value.trim() || "";
   const delivery = normalizeDeliveryPayload({
     id: document.getElementById("deliveryEditingId").value || undefined,
     municipio: document.getElementById("deliveryMunicipio").value,
@@ -2067,6 +2059,15 @@ async function registerDeliveryFromForm(){
     ano: Number(document.getElementById("deliveryCiclo").value) || DELIVERY_EDITABLE_YEAR
   });
   await saveDelivery(delivery);
+  // Salva observação junto (campo unificado na ficha de entrega)
+  if(obsText){
+    await saveObservation(normalizeObservationPayload({
+      municipio: delivery.municipio,
+      ano: delivery.ano,
+      observacao: obsText,
+      responsavel: delivery.responsavel
+    }));
+  }
   clearDeliveryForm();
 }
 
@@ -2082,6 +2083,10 @@ function editDelivery(id){
   document.getElementById("deliveryStatus").value = item.status;
   document.getElementById("deliveryLink").value = item.link || "";
   document.getElementById("deliveryResponsible").value = item.responsavel || "";
+  // Auto-popula observação existente para esse município/ano
+  const obs = getStoredObservations().find(o => o.municipio === item.municipio && Number(o.ano) === Number(item.ano));
+  const obsField = document.getElementById("deliveryObs");
+  if(obsField) obsField.value = obs ? (obs.observacao || "") : "";
   document.getElementById("deliveryFormTitle").textContent = "Editando entrega — " + item.municipio + " / " + item.risco + " (" + item.ano + ")";
   document.getElementById("deliveryFormTitle").scrollIntoView({behavior:"smooth", block:"center"});
 }
@@ -2106,6 +2111,8 @@ function clearDeliveryForm(){
   document.getElementById("deliveryStatus").value = "ok";
   document.getElementById("deliveryLink").value = "";
   document.getElementById("deliveryResponsible").value = "";
+  const obsField = document.getElementById("deliveryObs");
+  if(obsField) obsField.value = "";
   document.getElementById("deliveryFormTitle").textContent = "Nova entrega / edição";
 }
 
@@ -2495,9 +2502,15 @@ function copyAnalysisAiPrompt(){
 }
 async function registerAnalysisFromForm(){ await saveAnalysis(buildAnalysisFromForm()); }
 async function importAnalysisJson(){
+  const municipio = document.getElementById("analysisJsonMunicipio")?.value;
+  if(!municipio){ alert("Selecione o município antes de importar o JSON."); return; }
   const raw = document.getElementById("analysisJsonInput").value.trim();
   if(!raw){ alert("Cole o JSON da análise antes de importar."); return; }
-  try{ await saveAnalysis(normalizeAnalysisPayload(JSON.parse(raw))); }
+  try{
+    const parsed = JSON.parse(raw);
+    parsed.municipio = municipio; // município sempre definido pelo seletor
+    await saveAnalysis(normalizeAnalysisPayload(parsed));
+  }
   catch(err){ alert("JSON inválido: " + (err.message || err)); }
 }
 function exportAnalysesManifest(){
@@ -2586,6 +2599,8 @@ document.getElementById("saveAppsScriptConfigBtn").addEventListener("click", sav
 document.getElementById("syncManifestBtn").addEventListener("click", ()=>syncManifestFromAppsScript(false));
 document.getElementById("deliveryRegisterBtn").addEventListener("click", registerDeliveryFromForm);
 document.getElementById("deliveryClearFormBtn").addEventListener("click", clearDeliveryForm);
+document.getElementById("deliveryMunicipio").addEventListener("change", onDeliveryMunicipioChange);
+document.getElementById("deliveryCiclo").addEventListener("change", onDeliveryMunicipioChange);
 document.getElementById("uploadRegisterBtn").addEventListener("click", registerUpload);
 document.getElementById("drivePickerBtn").addEventListener("click", openDrivePickerPlaceholder);
 document.getElementById("uploadExportBtn").addEventListener("click", exportUploadManifest);
@@ -2656,6 +2671,7 @@ async function initPainel(){
   initDonut();
   buildYearBtns();
   renderTable();
+  renderPendingAnalysisAlert();
 
   renderCritList();
   renderQualityMeta();
