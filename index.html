@@ -2601,12 +2601,12 @@ document.getElementById("deliveryRegisterBtn").addEventListener("click", registe
 document.getElementById("deliveryClearFormBtn").addEventListener("click", clearDeliveryForm);
 document.getElementById("deliveryMunicipio").addEventListener("change", onDeliveryMunicipioChange);
 document.getElementById("deliveryCiclo").addEventListener("change", onDeliveryMunicipioChange);
-document.getElementById("uploadRegisterBtn").addEventListener("click", registerUpload);
-document.getElementById("drivePickerBtn").addEventListener("click", openDrivePickerPlaceholder);
-document.getElementById("uploadExportBtn").addEventListener("click", exportUploadManifest);
-document.getElementById("uploadClearBtn").addEventListener("click", clearUploadQueue);
-document.getElementById("obsRegisterBtn").addEventListener("click", registerObservationFromForm);
-document.getElementById("obsClearFieldBtn").addEventListener("click", clearObservationFromForm);
+document.getElementById("uploadRegisterBtn")?.addEventListener("click", registerUpload);
+document.getElementById("drivePickerBtn")?.addEventListener("click", openDrivePickerPlaceholder);
+document.getElementById("uploadExportBtn")?.addEventListener("click", exportUploadManifest);
+document.getElementById("uploadClearBtn")?.addEventListener("click", clearUploadQueue);
+document.getElementById("obsRegisterBtn")?.addEventListener("click", registerObservationFromForm);
+document.getElementById("obsClearFieldBtn")?.addEventListener("click", clearObservationFromForm);
 setupAnalysisTabs();
 document.getElementById("analysisRegisterBtn").addEventListener("click", registerAnalysisFromForm);
 document.getElementById("analysisClearFormBtn").addEventListener("click", clearAnalysisForm);
