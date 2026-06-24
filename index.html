@@ -799,7 +799,7 @@ Formato obrigatório:
           </div>
           <div class="analysis-table-wrap">
             <table class="analysis-table">
-              <thead><tr><th>Data da análise</th><th>Município</th><th>Versão</th><th>Documento</th><th>Status</th></tr></thead>
+              <thead><tr><th>Data da análise</th><th>Município</th><th>Versão</th><th>Documento</th><th>Status</th><th>Ações</th></tr></thead>
               <tbody id="analysisQueueBody"></tbody>
             </table>
           </div>
@@ -2352,7 +2352,7 @@ function renderAnalysisQueue(){
   if(!tbody) return;
   const items = getStoredAnalyses();
   if(!items.length){
-    tbody.innerHTML = `<tr class="empty-row"><td colspan="5">Nenhuma análise técnica registrada nesta estação.</td></tr>`;
+    tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Nenhuma análise técnica registrada nesta estação.</td></tr>`;
     return;
   }
   tbody.innerHTML = items.slice().reverse().map(a=>`
@@ -2362,6 +2362,7 @@ function renderAnalysisQueue(){
       <td>${a.rotulo}<br><span class="dim">${a.analista ? `Analista: ${a.analista}` : ""}</span></td>
       <td>${a.linkDrive ? `<a href="${a.linkDrive}" target="_blank" rel="noopener">${a.documento || "Documento no Drive"}</a>` : (a.documento || "—")}</td>
       <td><span class="analysis-chip">Análise registrada</span>${a.syncStatus ? `<br><span class="dim">${a.syncStatus}</span>` : ""}</td>
+      <td><button type="button" class="upload-action-btn danger" style="padding:5px 10px;font-size:11px;" onclick="removeAnalysis('${a.id}')">Excluir</button></td>
     </tr>`).join("");
 }
 function buildAnalysisFromForm(){
@@ -2385,7 +2386,36 @@ function buildAnalysisFromForm(){
     criterios
   });
 }
-async function syncAnalysisToAppsScript(analysis){
+async function syncAnalysisDeleteToAppsScript(id){
+  const cfg = getAppsScriptConfig();
+  if(!cfg.url) return {sent:false, message:"não sincronizado: integração não configurada"};
+  const payload = {
+    schema:"redec5.plancon.analysis_delete_event.v1",
+    token: cfg.token || "",
+    painel:"PLANCON REDEC 5 Sul I",
+    deleteAnalysis: {id}
+  };
+  try{
+    await fetch(cfg.url, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)});
+    return {sent:true};
+  }catch(err){ return {sent:false}; }
+}
+async function removeAnalysis(id){
+  if(!confirm("Remover esta análise? Ela deixará de aparecer no painel e será excluída da planilha.")) return;
+  // Adiciona ao tombstone
+  const existing = JSON.parse(localStorage.getItem(ANALYSIS_CLEARED_KEY) || "[]");
+  localStorage.setItem(ANALYSIS_CLEARED_KEY, JSON.stringify([...new Set([...existing, id])]));
+  // Remove do localStorage
+  const items = getStoredAnalyses().filter(a => a.id !== id);
+  setStoredAnalyses(items);
+  // Remove da memória e re-renderiza
+  Object.keys(QUALITY_HISTORY).forEach(k => delete QUALITY_HISTORY[k]);
+  items.forEach(addAnalysisToHistory);
+  renderAnalysisQueue();
+  renderQualityMeta(); renderQualityMatrix(); renderCompareCards(); renderCompareMunicipioStatus();
+  // Sinaliza exclusão para a planilha
+  syncAnalysisDeleteToAppsScript(id);
+}
   const cfg = getAppsScriptConfig();
   if(!cfg.url) return {sent:false, message:"não sincronizado: integração não configurada"};
   const payload = {
@@ -2478,16 +2508,19 @@ function exportAnalysesManifest(){
 }
 function clearAnalyses(){
   const items = getStoredAnalyses();
-  const msg = `Esta ação remove as ${items.length} análise(s) técnicas salvas localmente e impede que a planilha-manifesto as restaure em sincronizações futuras.\n\nAnálises cadastradas APÓS esta limpeza continuarão aparecendo normalmente.\n\nPara confirmar, digite LIMPAR.`;
+  const msg = `Esta ação remove as ${items.length} análise(s) técnica(s) salvas localmente e envia sinal de exclusão para a planilha-manifesto.\n\nAnálises cadastradas APÓS esta limpeza continuarão aparecendo normalmente.\n\nPara confirmar, digite LIMPAR.`;
   if(prompt(msg) !== "LIMPAR") return;
 
-  // Salva tombstone: IDs de todas as análises sendo deletadas
+  // Salva tombstone com IDs sendo removidos
   const existingCleared = JSON.parse(localStorage.getItem(ANALYSIS_CLEARED_KEY) || "[]");
   const newCleared = [...new Set([...existingCleared, ...items.map(a=>a.id)])];
   localStorage.setItem(ANALYSIS_CLEARED_KEY, JSON.stringify(newCleared));
   localStorage.removeItem(ANALYSIS_STORAGE_KEY);
 
-  // Aplica limpeza em memória sem precisar recarregar
+  // Envia sinal de exclusão para a planilha para cada análise
+  items.forEach(a => syncAnalysisDeleteToAppsScript(a.id));
+
+  // Aplica limpeza em memória
   Object.keys(QUALITY_HISTORY).forEach(k => delete QUALITY_HISTORY[k]);
   renderAnalysisQueue();
   renderQualityMeta();
