@@ -1132,9 +1132,17 @@ function applyFilters(){
 }
 function renderTable(){
   let rows=applyFilters();
-  if(sortKey) rows=[...rows].sort((a,b)=>{
-    const av=(a[sortKey]||"").toLowerCase(),bv=(b[sortKey]||"").toLowerCase();
-    if(av<bv)return-1*sortDir;if(av>bv)return 1*sortDir;return 0;
+
+  // Municípios sempre em ordem alfabética (localeCompare pt-BR trata acentos corretamente).
+  // Se sortKey estiver ativo, aplica-o como critério secundário dentro de cada grupo.
+  rows=[...rows].sort((a,b)=>{
+    const am=a.municipio.localeCompare(b.municipio,"pt-BR",{sensitivity:"base"});
+    if(am!==0) return am;
+    if(sortKey && sortKey!=="municipio"){
+      const av=(a[sortKey]||"").toLowerCase(),bv=(b[sortKey]||"").toLowerCase();
+      if(av<bv)return-1*sortDir;if(av>bv)return 1*sortDir;
+    }
+    return 0;
   });
   const body=document.getElementById("tableBody");
   if(!rows.length){body.innerHTML=`<tr class="empty-row"><td colspan="6">Nenhum resultado para esse filtro/busca.</td></tr>`;return;}
