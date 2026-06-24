@@ -11,7 +11,8 @@
   :root{
     --ink:#16243F;--paper:#EEF1F4;--surface:#FFFFFF;--line:#C7CDD6;
     --accent:#2454A6;--green:#1F7A4D;--green-bg:#E4F1EA;
-    --amber:#B5650A;--amber-bg:#FBEEDF;--red:#B0241D;--red-bg:#FBE7E5;--muted:#5B6B82;
+    --amber:#B5650A;--amber-bg:#FBEEDF;--red:#B0241D;--red-bg:#FBE7E5;
+    --blue:#1B5E99;--blue-bg:#DFF0FF;--muted:#5B6B82;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",sans-serif;-webkit-font-smoothing:antialiased;}
@@ -35,7 +36,7 @@
   .sub b{color:#fff;font-weight:600;}
   main{max-width:1080px;margin:0 auto;padding:26px 28px 70px;}
 
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:-26px 0 26px;}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin:-26px 0 26px;}
   .stat{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:6px;padding:16px 16px 14px;}
   .stat.ok{border-top-color:var(--green);}
   .stat.warn{border-top-color:var(--amber);}
@@ -63,6 +64,7 @@
   .popup-status.ok{color:#1F7A4D;background:#E4F1EA;}
   .popup-status.warn{color:#B5650A;background:#FBEEDF;}
   .popup-status.bad{color:#B0241D;background:#FBE7E5;}
+  .popup-status.outdated{color:#1B5E99;background:#DFF0FF;}
   .popup-status.none{color:#5B6B82;background:#F0F2F5;}
   .popup-riscos{color:#5B6B82;font-size:12px;line-height:1.6;}
   .popup-quality{margin-top:9px;padding-top:9px;border-top:1px solid #E7E9ED;}
@@ -106,6 +108,7 @@
   .stamp.ok{color:var(--green);background:var(--green-bg);}
   .stamp.warn{color:var(--amber);background:var(--amber-bg);}
   .stamp.bad{color:var(--red);background:var(--red-bg);}
+  .stamp.outdated{color:var(--blue);background:var(--blue-bg);}
   .empty-row td{text-align:center;color:var(--muted);padding:30px 14px;font-size:14px;}
   .historic-banner{grid-column:1/-1;background:#FFF8E6;border:1px solid #E8C84A;border-left:4px solid #B5650A;border-radius:5px;padding:10px 14px;font-size:13px;color:#7A4200;display:flex;align-items:center;gap:8px;}
   .historic-banner::before{content:"🕘";font-size:15px;}
@@ -390,9 +393,10 @@
     <div class="search"><input type="text" id="searchInput" placeholder="Buscar município ou tipo de risco…" aria-label="Buscar"></div>
     <div class="pills" role="group" aria-label="Filtrar por status">
       <button class="pill" data-status="all"  aria-pressed="true">Todos</button>
-      <button class="pill" data-status="ok"   aria-pressed="false">Atualizado</button>
-      <button class="pill" data-status="warn" aria-pressed="false">Verificar</button>
-      <button class="pill" data-status="bad"  aria-pressed="false">Não entregue</button>
+      <button class="pill" data-status="ok"        aria-pressed="false">Atualizado</button>
+      <button class="pill" data-status="outdated"   aria-pressed="false">Desatualizado</button>
+      <button class="pill" data-status="warn"      aria-pressed="false">Verificar</button>
+      <button class="pill" data-status="bad"       aria-pressed="false">Não entregue</button>
     </div>
   </div>
 
@@ -542,6 +546,7 @@
               <label for="deliveryStatus">Status</label>
               <select id="deliveryStatus">
                 <option value="ok">Atualizado</option>
+                <option value="outdated">Desatualizado</option>
                 <option value="warn">Verificar</option>
                 <option value="bad">Não entregue</option>
               </select>
@@ -872,9 +877,9 @@ const QUALITY_HISTORY = Object.fromEntries(
 /* ============================================================================
    LÓGICA — ENTREGA (mapa / donut / tabela / seletor de ano)
    ============================================================================ */
-const STATUS_LABEL = {ok:"Atualizado", warn:"Verificar", bad:"Não entregue"};
-const STATUS_FILL  = {ok:"#6EC49A",    warn:"#F5C07A",   bad:"#E8807C"};
-const STATUS_COLOR = {ok:"#1F7A4D",    warn:"#B5650A",   bad:"#B0241D"};
+const STATUS_LABEL = {ok:"Atualizado", outdated:"Desatualizado", warn:"Verificar", bad:"Não entregue"};
+const STATUS_FILL  = {ok:"#6EC49A",    outdated:"#8BC6E8", warn:"#F5C07A",   bad:"#E8807C"};
+const STATUS_COLOR = {ok:"#1F7A4D",    outdated:"#1B5E99", warn:"#B5650A",   bad:"#B0241D"};
 const QSTATUS_LABEL = {ok:"Atende totalmente", warn:"Atende parcialmente", bad:"Não atende", pending:"Pendente de análise"};
 const QSTATUS_ICON = {ok:"✓", warn:"!", bad:"✕", pending:"—"};
 const QSTATUS_SCORE = {bad:0, warn:1, ok:2};
@@ -928,7 +933,7 @@ function getMunicipioSummary(){
   const map = {};
   DATA.forEach(d=>{
     if(!map[d.municipio]) map[d.municipio]={status:"ok",riscos:[]};
-    const rank={bad:0,warn:1,ok:2};
+    const rank={bad:0,outdated:1,warn:2,ok:3};
     if(rank[d.status]<rank[map[d.municipio].status]) map[d.municipio].status=d.status;
     if(d.risco!=="—") map[d.municipio].riscos.push(d.risco);
   });
@@ -1013,6 +1018,7 @@ function initMap(){
     div.innerHTML = `
       <div class="map-legend-title">REDEC 5 - Sul I</div>
       <div class="map-legend-item"><div class="map-legend-swatch" style="background:#6EC49A"></div>Atualizado</div>
+      <div class="map-legend-item"><div class="map-legend-swatch" style="background:#8BC6E8"></div>Desatualizado</div>
       <div class="map-legend-item"><div class="map-legend-swatch" style="background:#F5C07A"></div>A verificar</div>
       <div class="map-legend-item"><div class="map-legend-swatch" style="background:#E8807C"></div>Não entregue</div>
       <div class="map-legend-title" style="margin-top:10px">Demais municípios</div>
@@ -1039,14 +1045,15 @@ function updateMapColors(){
 
 function initDonut(){
   const summary = getMunicipioSummary();
-  const counts  = {ok:0, warn:0, bad:0};
-  Object.values(summary).forEach(m=>counts[m.status]++);
+  const counts  = {ok:0, outdated:0, warn:0, bad:0};
+  Object.values(summary).forEach(m=>{ if(counts[m.status]!==undefined) counts[m.status]++; });
   const total = Object.values(counts).reduce((a,b)=>a+b,0);
 
   const segments = [
-    {label:"Atualizado",   value:counts.ok,   color:STATUS_COLOR.ok},
-    {label:"A verificar",  value:counts.warn,  color:STATUS_COLOR.warn},
-    {label:"Não entregue", value:counts.bad,   color:STATUS_COLOR.bad},
+    {label:"Atualizado",    value:counts.ok,       color:STATUS_COLOR.ok},
+    {label:"Desatualizado", value:counts.outdated,  color:STATUS_COLOR.outdated},
+    {label:"A verificar",   value:counts.warn,      color:STATUS_COLOR.warn},
+    {label:"Não entregue",  value:counts.bad,       color:STATUS_COLOR.bad},
   ].filter(s=>s.value>0);
 
   const canvas = document.getElementById("donutCanvas");
@@ -1095,11 +1102,11 @@ function renderStats(){
   const statusPorMunicipio={};
   DATA.forEach(d=>{
     const cur=statusPorMunicipio[d.municipio];
-    const rank={bad:0,warn:1,ok:2};
+    const rank={bad:0,outdated:1,warn:2,ok:3};
     if(!cur||rank[d.status]<rank[cur]) statusPorMunicipio[d.municipio]=d.status;
   });
-  const counts={ok:0,warn:0,bad:0};
-  Object.values(statusPorMunicipio).forEach(s=>counts[s]++);
+  const counts={ok:0,outdated:0,warn:0,bad:0};
+  Object.values(statusPorMunicipio).forEach(s=>{ if(counts[s]!==undefined) counts[s]++; });
   const isHistorico = anoAtivo !== ANOS[0];
   const vigLabel = isHistorico ? `Sem plano vigente (${anoAtivo-1}/${anoAtivo})` : `Sem plano vigente (2025/2026)`;
   const historicoBanner = isHistorico
@@ -1109,6 +1116,7 @@ function renderStats(){
     ${historicoBanner}
     <div class="stat"><div class="num">${municipiosUnicos.size}</div><div class="label">Municípios na REDEC 5 - Sul I</div></div>
     <div class="stat ok"><div class="num">${counts.ok}</div><div class="label">Atualizados</div></div>
+    <div class="stat" style="border-top-color:var(--blue)"><div class="num">${counts.outdated}</div><div class="label">Desatualizados</div></div>
     <div class="stat warn"><div class="num">${counts.warn}</div><div class="label">A verificar</div></div>
     <div class="stat bad"><div class="num">${counts.bad}</div><div class="label">${vigLabel}</div></div>
   `;
@@ -1145,7 +1153,7 @@ function renderTable(){
     if(d.obs && !groups[groupIndex[d.municipio]].obs) groups[groupIndex[d.municipio]].obs = d.obs;
   });
 
-  const rank={bad:0,warn:1,ok:2};
+  const rank={bad:0,outdated:1,warn:2,ok:3};
   body.innerHTML = groups.map((g,gi)=>{
     const summaryStatus = g.items.reduce((worst,d)=> rank[d.status]<rank[worst] ? d.status : worst, "ok");
     const groupId = "mungrp-" + gi;
@@ -1893,7 +1901,7 @@ function normalizeDeliveryPayload(raw){
     risco,
     versao: (d.versao || "").trim() || "—",
     atualizacao: (d.atualizacao || "").trim() || "—",
-    status: ["ok","warn","bad"].includes(d.status) ? d.status : "bad",
+    status: ["ok","outdated","warn","bad"].includes(d.status) ? d.status : "bad",
     link: (d.link || "").trim() || null,
     responsavel: (d.responsavel || "").trim(),
     updatedAt: d.updatedAt || new Date().toISOString()
@@ -2003,7 +2011,7 @@ async function saveDelivery(delivery){
   setStoredDeliveries(items);
   applyDeliveriesToAllData(items);
   renderDeliveryQueue();
-  renderStats(); renderTable(); updateMapColors(); initDonut();
+  renderStats(); renderTable(); updateMapColors(); initDonut(); buildYearBtns();
   const sync = await syncDeliveryToAppsScript(delivery);
   alert(sync.sent ? "Entrega salva e enviada para a planilha." : "Entrega salva localmente. " + sync.message);
 }
@@ -2046,7 +2054,7 @@ async function removeDelivery(id){
   setStoredDeliveries(items);
   applyDeliveriesToAllData(items);
   renderDeliveryQueue();
-  renderStats(); renderTable(); updateMapColors(); initDonut();
+  renderStats(); renderTable(); updateMapColors(); initDonut(); buildYearBtns();
   const sync = await syncDeliveryDeleteToAppsScript(id);
   alert(sync.sent ? "Entrega removida e exclusão enviada para a planilha." : "Entrega removida localmente. " + sync.message);
 }
