@@ -514,7 +514,7 @@ function initMap(){
   const REDEC_SET = new Set(REDEC);
 
   function getStyle(feature){
-    const nome = feature.properties.name;
+    const nome = feature.properties.NM_MUN;
     if(REDEC_SET.has(nome)){
       const info = summary[nome];
       const st   = info ? info.status : "bad";
@@ -526,7 +526,7 @@ function initMap(){
   let geojsonLayer;
 
   function onEachFeature(feature, layer){
-    const nome = feature.properties.name;
+    const nome = feature.properties.NM_MUN;
     const isRedec = REDEC_SET.has(nome);
     const info = summary[nome];
 
@@ -597,7 +597,7 @@ function updateMapColors(){
   const summary = getMunicipioSummary();
   const REDEC_SET = new Set(REDEC);
   window._geojsonLayer.eachLayer(layer=>{
-    const nome = layer.feature.properties.name;
+    const nome = layer.feature.properties.NM_MUN;
     if(REDEC_SET.has(nome)){
       const info = summary[nome];
       const st   = info ? info.status : "bad";
@@ -613,7 +613,7 @@ function initDonut(){
   const total = REDEC.length;
 
   const segments = [
-    {label:"Atualizado",    value:counts.ok,       color:STATUS_COLOR.ok},
+    {label:"Atualizado",   value:counts.ok,       color:STATUS_COLOR.ok},
     {label:"Desatualizado", value:counts.outdated,  color:STATUS_COLOR.outdated},
     {label:"A verificar",   value:counts.warn,      color:STATUS_COLOR.warn},
     {label:"Não entregue",  value:counts.bad,       color:STATUS_COLOR.bad},
