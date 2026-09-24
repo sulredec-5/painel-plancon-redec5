@@ -159,7 +159,7 @@
   .quality-scroll{overflow-x:visible;}
   table.quality-matrix{width:100%;border-collapse:collapse;table-layout:fixed;min-width:0;}
   table.quality-matrix thead th{position:sticky;top:0;background:#F6F7F9;z-index:1;}
-  table.quality-matrix th.crit-col{font-family:"IBM Plex Sans",sans-serif;font-size:10px;letter-spacing:0;text-transform:none;color:var(--muted);text-align:center;padding:8px 4px;border-left:1px solid #E7E9ED;cursor:default;width:calc((100% - 145px)/8);line-height:1.12;white-space:normal;word-break:normal;overflow-wrap:anywhere;hyphens:auto;vertical-align:bottom;}
+  table.quality-matrix th.crit-col{font-family:"IBM Plex Sans",sans-serif;font-size:10px;letter-spacing:0;text-transform:none;color:var(--muted);text-align:center;padding:8px 4px;border-left:1px solid #E7E9ED;cursor:default;width:calc((100% - 145px)/var(--crit-count,8));line-height:1.12;white-space:normal;word-break:normal;overflow-wrap:anywhere;hyphens:auto;vertical-align:bottom;}
   table.quality-matrix th.crit-col .crit-num{display:block;font-family:"IBM Plex Mono",monospace;font-weight:700;color:var(--ink);font-size:11px;margin-bottom:3px;}
   table.quality-matrix th.crit-col .crit-label{display:block;max-width:88px;margin:0 auto;}
   table.quality-matrix th.mun-col{width:145px;min-width:145px;}
@@ -186,7 +186,7 @@
   @media(max-width:720px){
     table.quality-matrix{font-size:11px;}
     table.quality-matrix th.mun-col{width:120px;min-width:120px;}
-    table.quality-matrix th.crit-col{width:calc((100% - 120px)/8);font-size:9px;padding:7px 2px;}
+    table.quality-matrix th.crit-col{width:calc((100% - 120px)/var(--crit-count,8));font-size:9px;padding:7px 2px;}
     table.quality-matrix th.crit-col .crit-label{max-width:54px;}
     table.quality-matrix td.mun-name{font-size:11.5px;padding:9px 7px;}
     .cell-btn{height:38px;}
@@ -232,6 +232,19 @@
   .dd-tag.bad{color:var(--red);background:var(--red-bg);}
   .dd-pending{padding:30px 22px;text-align:center;color:var(--muted);font-size:13.5px;}
   .dd-pending b{color:var(--ink);}
+  .dd-copy-btn{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.03em;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:6px 11px;cursor:pointer;white-space:nowrap;}
+  .dd-copy-btn:hover{background:#F6F7F9;}
+  .dd-copy-btn.copied{background:var(--green-bg);color:var(--green);border-color:var(--green);}
+  .dd-resumo{padding:14px 22px;border-bottom:1px solid var(--line);background:#FAFBFC;}
+  .dd-resumo-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px;}
+  .dd-resumo-title{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .dd-resumo-text{font-size:13px;color:#384660;line-height:1.6;margin:0;}
+
+  /* ── Abas de tipo de risco (modal de qualidade / comparativo) ───────── */
+  .risk-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .risk-tab{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.03em;padding:8px 16px;border-radius:20px;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer;white-space:nowrap;}
+  .risk-tab:hover{border-color:var(--accent);color:var(--ink);}
+  .risk-tab[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink);}
 
   /* ── Comparativo entre versões ─────────────────────────────────────── */
   .compare-open-btn{
@@ -361,8 +374,8 @@
     <hr>
     <p><b>Como isto é atualizado:</b> Os dados de entrega e análises dos PLANCONs são sincronizados automaticamente e em tempo real a partir de uma planilha do Google Sheets gerenciada pela equipe da REDEC 5.</p>
     <p>Critério de "atualizado": o município tem pelo menos um documento na pasta do REDEC 5 do ano atual <b>ou</b> do ano anterior — já que os planos têm validade de um ano, isso garante que sempre exista uma versão vigente. Só entra como "não entregue" quem não tem nenhum documento em nenhuma das duas pastas.</p>
-    <p><b>Sobre a qualidade do conteúdo:</b> avaliação manual feita a partir da leitura integral de cada PLANCON frente a 8 critérios de conteúdo mínimo (definidos pela REDEC). Município sem análise ainda aparece como "Pendente de análise" na matriz.</p>
-    <p><b>Sobre o comparativo:</b> cada município possui histórico próprio de versões. A comparação antes/depois só é exibida quando o mesmo município tiver duas ou mais análises registradas no banco de dados.</p>
+    <p><b>Sobre a qualidade do conteúdo:</b> avaliação manual feita a partir da leitura integral de cada PLANCON frente a critérios de conteúdo mínimo definidos pela REDEC, separados por tipo de risco (chuvas intensas, e estiagem/fogo em vegetação). Município sem análise ainda aparece como "Pendente de análise" na matriz.</p>
+    <p><b>Sobre o comparativo:</b> cada município possui histórico próprio de versões, por tipo de risco. A comparação antes/depois só é exibida quando o mesmo município tiver duas ou mais análises registradas no banco de dados para aquele tipo.</p>
   </footer>
 
   <!-- ===================== MODAL: QUALIDADE DOS PLANOS ===================== -->
@@ -376,6 +389,7 @@
       </div>
 
       <div class="quality-modal-body">
+        <div class="risk-tabs" id="qualityRiskTabs" role="tablist" aria-label="Tipo de risco"></div>
         <div class="section-meta" id="qualityMeta" style="text-align:left;margin-bottom:14px;"></div>
 
         <ol class="crit-list" id="critList"></ol>
@@ -411,6 +425,7 @@
         <button class="quality-modal-close" id="compareModalClose" aria-label="Fechar">✕</button>
       </div>
       <div class="quality-modal-body">
+        <div class="risk-tabs" id="compareRiskTabs" role="tablist" aria-label="Tipo de risco"></div>
         <div class="compare-grid" id="compareCards"></div>
         <div class="compare-note" id="compareNote"></div>
         <div class="compare-controls">
@@ -451,7 +466,6 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwEzjs3Mk19ye5W2wcGPxZk
    DADOS GLOBAIS E LÓGICA DO PAINEL
    ============================================================================ */
 let ALL_DATA = [];
-const QUALITY_HISTORY = {};
 
 const REDEC = [
   "Barra do Piraí","Barra Mansa","Comendador Levy Gasparian","Itatiaia",
@@ -459,16 +473,44 @@ const REDEC = [
   "Resende","Rio das Flores","Três Rios","Valença","Vassouras","Volta Redonda"
 ];
 
-const QUALITY_CRITERIA = [
-  {id:1, short:"Responsabilidades por órgão", full:"Indicação das responsabilidades de cada órgão na gestão de desastres, especialmente quanto às ações de preparação, resposta e recuperação."},
-  {id:2, short:"Alerta / radioamadores", full:"Definição dos sistemas de alerta a desastres, em articulação com o sistema de monitoramento, com especial atenção dos radioamadores."},
-  {id:3, short:"Exercícios simulados (organização)", full:"Organização dos exercícios simulados, a serem realizados com a participação da população."},
-  {id:4, short:"Rotas, pontos seguros e abrigos", full:"Organização do sistema de atendimento emergencial à população, incluindo a localização das rotas de deslocamento e dos pontos seguros no momento do desastre, bem como dos pontos de abrigo após a ocorrência de desastre."},
-  {id:5, short:"Atendimento médico e psicológico", full:"Definição das ações de atendimento médico-hospitalar e psicológico aos atingidos por desastre."},
-  {id:6, short:"Cadastro de equipes / voluntários", full:"Cadastramento das equipes técnicas e de voluntários para atuarem em circunstâncias de desastres."},
-  {id:7, short:"Centros de doações", full:"Localização dos centros de recebimento e organização da estratégia de distribuição de doações e suprimentos."},
-  {id:8, short:"Realização de simulados (registro)", full:"Realização de exercícios simulados de seus Planos de Contingência, indicando o tipo de simulado e se houve a participação dos órgãos setoriais do município (Secretarias)."},
-];
+/* ── Tipos de risco: cada um tem seus critérios e seu próprio histórico ── */
+const RISK_TYPES = {
+  chuvas: {
+    label: "Chuvas intensas",
+    shortLabel: "Chuvas",
+    prefix: "C",
+    dataKey: "analises",
+    history: {},
+    criteria: [
+      {id:1, short:"Responsabilidades por órgão", full:"Indicação das responsabilidades de cada órgão na gestão de desastres, especialmente quanto às ações de preparação, resposta e recuperação."},
+      {id:2, short:"Alerta / radioamadores", full:"Definição dos sistemas de alerta a desastres, em articulação com o sistema de monitoramento, com especial atenção dos radioamadores."},
+      {id:3, short:"Exercícios simulados (organização)", full:"Organização dos exercícios simulados, a serem realizados com a participação da população."},
+      {id:4, short:"Rotas, pontos seguros e abrigos", full:"Organização do sistema de atendimento emergencial à população, incluindo a localização das rotas de deslocamento e dos pontos seguros no momento do desastre, bem como dos pontos de abrigo após a ocorrência de desastre."},
+      {id:5, short:"Atendimento médico e psicológico", full:"Definição das ações de atendimento médico-hospitalar e psicológico aos atingidos por desastre."},
+      {id:6, short:"Cadastro de equipes / voluntários", full:"Cadastramento das equipes técnicas e de voluntários para atuarem em circunstâncias de desastres."},
+      {id:7, short:"Centros de doações", full:"Localização dos centros de recebimento e organização da estratégia de distribuição de doações e suprimentos."},
+      {id:8, short:"Realização de simulados (registro)", full:"Realização de exercícios simulados de seus Planos de Contingência, indicando o tipo de simulado e se houve a participação dos órgãos setoriais do município (Secretarias)."},
+    ]
+  },
+  estiagem: {
+    label: "Estiagem e fogo em vegetação",
+    shortLabel: "Estiagem/Fogo",
+    prefix: "FV",
+    dataKey: "analisesEstiagem",
+    history: {},
+    criteria: [
+      {id:1, short:"Fenômeno El Niño", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes do fenômeno El Niño."},
+      {id:2, short:"Ondas de calor", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes das ondas de calor."},
+      {id:3, short:"Baixa umidade relativa do ar", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes da baixa umidade relativa do ar."},
+      {id:4, short:"Estiagem", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes da estiagem."},
+      {id:5, short:"Escassez hídrica", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes da escassez hídrica."},
+      {id:6, short:"Incêndios florestais e em vegetação", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes dos incêndios florestais e em vegetação."},
+      {id:7, short:"Outros desastres do período seco", full:"Procedimentos e ações voltados ao enfrentamento de outros desastres relacionados ao período sazonal de redução das precipitações."},
+    ]
+  }
+};
+let riskTipoAtivoQuality = "chuvas";
+let riskTipoAtivoCompare = "chuvas";
 
 let ANOS = [];
 let anoAtivo = null;
@@ -792,86 +834,105 @@ function buildYearBtns(){
 }
 
 /* ============================================================================
-   LÓGICA — QUALIDADE DO CONTEÚDO (Matriz e Drilldown)
+   LÓGICA — QUALIDADE DO CONTEÚDO (Matriz e Drilldown, por tipo de risco)
    ============================================================================ */
-function municipioVersions(municipio){ return QUALITY_HISTORY[municipio] || []; }
-function latestQualityVersion(municipio){ const v = municipioVersions(municipio); return v.length ? v[v.length-1] : null; }
-function latestQualityData(municipio){
-  const v = latestQualityVersion(municipio);
+function municipioVersions(municipio, tipo){ return RISK_TYPES[tipo].history[municipio] || []; }
+function latestQualityVersion(municipio, tipo){ const v = municipioVersions(municipio, tipo); return v.length ? v[v.length-1] : null; }
+function latestQualityData(municipio, tipo){
+  const v = latestQualityVersion(municipio, tipo);
   if(!v) return null;
-  return {analisadoEm:v.dataAnalise, fonte:v.documento, criterios:v.criterios, versaoAnalise:v.id, rotulo:v.rotulo};
+  return {analisadoEm:v.dataAnalise, fonte:v.documento, criterios:v.criterios, versaoAnalise:v.id, rotulo:v.rotulo, sintese:v.sintese};
 }
 
-function qualityStatusFor(municipio, critId){
-  const m = latestQualityData(municipio);
+function qualityStatusFor(municipio, critId, tipo){
+  const m = latestQualityData(municipio, tipo);
   if(!m || !m.criterios[critId]) return "pending";
   return m.criterios[critId].status;
 }
 
-function municipioQualitySummary(municipio){
-  const m = latestQualityData(municipio);
+function municipioQualitySummary(municipio, tipo){
+  const m = latestQualityData(municipio, tipo);
   if(!m) return null;
   const counts = {ok:0, warn:0, bad:0};
-  QUALITY_CRITERIA.forEach(c=>{
+  RISK_TYPES[tipo].criteria.forEach(c=>{
     const st = m.criterios[c.id] ? m.criterios[c.id].status : null;
     if(st) counts[st]++;
   });
   return counts;
 }
 
+/* Popup do mapa: mostra um bloco de qualidade por tipo de risco, sempre os dois */
 function buildPopupQualityBlock(municipio){
-  const summary = municipioQualitySummary(municipio);
-  if(!summary){
+  return Object.keys(RISK_TYPES).map(tipo=>{
+    const cfg = RISK_TYPES[tipo];
+    const summary = municipioQualitySummary(municipio, tipo);
+    if(!summary){
+      return `
+        <div class="popup-quality">
+          <div class="popup-quality-title">Qualidade — ${cfg.shortLabel}</div>
+          <div class="popup-quality-pending">Pendente de análise</div>
+          <button class="popup-quality-btn" data-quality-mun="${municipio}" data-quality-tipo="${tipo}">Ver análise ↗</button>
+        </div>
+      `;
+    }
     return `
       <div class="popup-quality">
-        <div class="popup-quality-title">Qualidade dos Planos</div>
-        <div class="popup-quality-pending">Pendente de análise</div>
-        <button class="popup-quality-btn" data-quality-mun="${municipio}">Ver análise ↗</button>
+        <div class="popup-quality-title">Qualidade — ${cfg.shortLabel}</div>
+        <div class="popup-quality-chips">
+          <span class="pqc ok">${summary.ok} total</span>
+          <span class="pqc warn">${summary.warn} parcial</span>
+          <span class="pqc bad">${summary.bad} não atende</span>
+        </div>
+        <button class="popup-quality-btn" data-quality-mun="${municipio}" data-quality-tipo="${tipo}">Ver análise ↗</button>
       </div>
     `;
-  }
-  return `
-    <div class="popup-quality">
-      <div class="popup-quality-title">Qualidade dos Planos</div>
-      <div class="popup-quality-chips">
-        <span class="pqc ok">${summary.ok} total</span>
-        <span class="pqc warn">${summary.warn} parcial</span>
-        <span class="pqc bad">${summary.bad} não atende</span>
-      </div>
-      <button class="popup-quality-btn" data-quality-mun="${municipio}">Ver análise ↗</button>
-    </div>
-  `;
+  }).join("");
 }
 
-function renderCritList(){
-  document.getElementById("critList").innerHTML = QUALITY_CRITERIA.map(c=>
-    `<li><b>${c.short}.</b> ${c.full}</li>`
+function renderRiskTabs(containerId, tipoAtivo, onSelect){
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = Object.keys(RISK_TYPES).map(tipo=>
+    `<button class="risk-tab" role="tab" data-tipo="${tipo}" aria-pressed="${tipo===tipoAtivo}">${RISK_TYPES[tipo].label}</button>`
+  ).join("");
+  wrap.querySelectorAll(".risk-tab").forEach(btn=>{
+    btn.addEventListener("click", ()=>onSelect(btn.dataset.tipo));
+  });
+}
+
+function renderCritList(tipo){
+  document.getElementById("critList").innerHTML = RISK_TYPES[tipo].criteria.map(c=>
+    `<li><b>${RISK_TYPES[tipo].prefix}${c.id}. ${c.short}.</b> ${c.full}</li>`
   ).join("");
 }
 
 function renderQualityMeta(){
-  const analisados = REDEC.filter(m=>latestQualityData(m)).length;
-  const txt = `${analisados} de ${REDEC.length} municípios analisados`;
-  document.getElementById("qualityMeta").textContent = txt;
+  const parts = Object.keys(RISK_TYPES).map(tipo=>{
+    const analisados = REDEC.filter(m=>latestQualityData(m, tipo)).length;
+    return `${analisados}/${REDEC.length} ${RISK_TYPES[tipo].shortLabel.toLowerCase()}`;
+  });
+  document.getElementById("qualityMeta").textContent = parts.join(" · ") + " analisados";
   const metaEl = document.getElementById("qualityOpenMeta");
-  if(metaEl) metaEl.textContent = txt;
+  if(metaEl) metaEl.textContent = parts.join(" · ");
 }
 
-function renderQualityMatrix(){
+function renderQualityMatrix(tipo){
+  const cfg = RISK_TYPES[tipo];
+  document.getElementById("qualityMatrix").style.setProperty("--crit-count", cfg.criteria.length);
+
   const headRow = document.getElementById("qualityHeadRow");
   headRow.innerHTML = `<th class="mun-col">Município</th>` +
-    QUALITY_CRITERIA.map(c=>`<th class="crit-col" title="${c.full}"><span class="crit-num">C${c.id}</span><span class="crit-label">${c.short}</span></th>`).join("");
+    cfg.criteria.map(c=>`<th class="crit-col" title="${c.full}"><span class="crit-num">${cfg.prefix}${c.id}</span><span class="crit-label">${c.short}</span></th>`).join("");
 
   const body = document.getElementById("qualityBody");
   body.innerHTML = REDEC.map(municipio=>{
-    const summary = municipioQualitySummary(municipio);
+    const summary = municipioQualitySummary(municipio, tipo);
     const sub = summary
       ? `${summary.ok} total · ${summary.warn} parcial · ${summary.bad} não atende`
       : "Pendente de análise";
-    const cells = QUALITY_CRITERIA.map(c=>{
-      const st = qualityStatusFor(municipio, c.id);
+    const cells = cfg.criteria.map(c=>{
+      const st = qualityStatusFor(municipio, c.id, tipo);
       const cls = st==="pending" ? "pending" : st;
-      return `<td><button class="cell-btn ${cls}" data-mun="${municipio}" data-crit="${c.id}" aria-label="${municipio} — critério ${c.id}: ${QSTATUS_LABEL[st]}"><span class="cell-icon" aria-hidden="true">${QSTATUS_ICON[st] || "—"}</span></button></td>`;
+      return `<td><button class="cell-btn ${cls}" data-mun="${municipio}" data-crit="${c.id}" aria-label="${municipio} — ${cfg.prefix}${c.id}: ${QSTATUS_LABEL[st]}"><span class="cell-icon" aria-hidden="true">${QSTATUS_ICON[st] || "—"}</span></button></td>`;
     }).join("");
     return `
       <tr>
@@ -882,50 +943,82 @@ function renderQualityMatrix(){
   }).join("");
 
   body.querySelectorAll(".cell-btn").forEach(btn=>{
-    btn.addEventListener("click",()=>openDrilldown(btn.dataset.mun, +btn.dataset.crit));
+    btn.addEventListener("click",()=>openDrilldown(btn.dataset.mun, +btn.dataset.crit, riskTipoAtivoQuality));
   });
   body.querySelectorAll(".mun-name").forEach(td=>{
-    td.addEventListener("click",()=>openDrilldown(td.dataset.mun, null));
+    td.addEventListener("click",()=>openDrilldown(td.dataset.mun, null, riskTipoAtivoQuality));
   });
 }
 
-function openDrilldown(municipio, focusCritId){
+function copyResumoToClipboard(texto, btn){
+  const done = ()=>{
+    btn.textContent = "Copiado ✓";
+    btn.classList.add("copied");
+    setTimeout(()=>{ btn.textContent = "Copiar resumo"; btn.classList.remove("copied"); }, 1800);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texto).then(done).catch(()=>fallbackCopy(texto, done));
+  } else {
+    fallbackCopy(texto, done);
+  }
+}
+function fallbackCopy(texto, done){
+  const ta = document.createElement("textarea");
+  ta.value = texto; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+  done();
+}
+
+function openDrilldown(municipio, focusCritId, tipo){
+  const cfg = RISK_TYPES[tipo];
   const panel = document.getElementById("drilldown");
-  const data = latestQualityData(municipio);
+  const data = latestQualityData(municipio, tipo);
 
   if(!data){
     panel.innerHTML = `
       <div class="dd-header">
         <div>
           <p class="dd-title">${municipio}</p>
-          <p class="dd-sub">Qualidade dos Planos</p>
+          <p class="dd-sub">Qualidade dos Planos · ${cfg.label}</p>
         </div>
         <button class="dd-close" id="ddClose" aria-label="Fechar">✕</button>
       </div>
-      <div class="dd-pending">Este município ainda não foi analisado. <b>Pendente de análise.</b></div>
+      <div class="dd-pending">Este município ainda não foi analisado para ${cfg.label.toLowerCase()}. <b>Pendente de análise.</b></div>
     `;
   } else {
-    const summary = municipioQualitySummary(municipio);
+    const summary = municipioQualitySummary(municipio, tipo);
+    const resumoHtml = data.sintese ? `
+      <div class="dd-resumo">
+        <div class="dd-resumo-head">
+          <span class="dd-resumo-title">Resumo da análise</span>
+          <button class="dd-copy-btn" id="ddCopyResumo">Copiar resumo</button>
+        </div>
+        <p class="dd-resumo-text">${data.sintese}</p>
+      </div>
+    ` : "";
     panel.innerHTML = `
       <div class="dd-header">
         <div>
           <p class="dd-title">${municipio}</p>
-          <p class="dd-sub">${data.fonte} · analisado em ${data.analisadoEm}</p>
+          <p class="dd-sub">${cfg.label} · ${data.fonte || ""} · analisado em ${data.analisadoEm}</p>
         </div>
         <button class="dd-close" id="ddClose" aria-label="Fechar">✕</button>
       </div>
+      ${resumoHtml}
       <div class="dd-summary">
         <span class="sumchip ok"><span class="dot"></span>${summary.ok} atende totalmente</span>
         <span class="sumchip warn"><span class="dot"></span>${summary.warn} atende parcialmente</span>
         <span class="sumchip bad"><span class="dot"></span>${summary.bad} não atende</span>
       </div>
       <div class="dd-body">
-        ${QUALITY_CRITERIA.map(c=>{
+        ${cfg.criteria.map(c=>{
           const item = data.criterios[c.id];
           const st = item ? item.status : "pending";
           return `
             <div class="dd-item" id="dd-item-${c.id}">
-              <div class="dd-num">${String(c.id).padStart(2,"0")}</div>
+              <div class="dd-num">${cfg.prefix}${c.id}</div>
               <div>
                 <p class="dd-item-title">${c.short} <span class="dd-tag ${st==='pending'?'bad':st}">${QSTATUS_LABEL[st]}</span></p>
                 <p class="dd-item-text">${item ? item.texto : "Critério ainda não avaliado para este município."}</p>
@@ -939,6 +1032,8 @@ function openDrilldown(municipio, focusCritId){
 
   panel.classList.add("open");
   document.getElementById("ddClose").addEventListener("click", closeDrilldown);
+  const copyBtn = document.getElementById("ddCopyResumo");
+  if(copyBtn) copyBtn.addEventListener("click", ()=>copyResumoToClipboard(data.sintese, copyBtn));
   panel.scrollIntoView({behavior:"smooth", block:"start"});
 
   if(focusCritId){
@@ -956,11 +1051,21 @@ function closeDrilldown(){
   document.getElementById("drilldown").classList.remove("open");
 }
 
-function openQualityModal(municipio){
+function setQualityTipo(tipo){
+  riskTipoAtivoQuality = tipo;
+  document.querySelectorAll("#qualityRiskTabs .risk-tab").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.tipo===tipo)));
+  closeDrilldown();
+  renderCritList(tipo);
+  renderQualityMatrix(tipo);
+}
+
+function openQualityModal(municipio, tipo){
   document.getElementById("qualityModalBackdrop").classList.add("open");
   document.body.style.overflow = "hidden";
+  renderRiskTabs("qualityRiskTabs", riskTipoAtivoQuality, setQualityTipo);
+  setQualityTipo(tipo || riskTipoAtivoQuality);
   if(municipio){
-    openDrilldown(municipio, null);
+    openDrilldown(municipio, null, riskTipoAtivoQuality);
   }
 }
 
@@ -981,12 +1086,12 @@ document.addEventListener("keydown", (e)=>{
 });
 document.addEventListener("click", (e)=>{
   const btn = e.target.closest("[data-quality-mun]");
-  if(btn) openQualityModal(btn.dataset.qualityMun);
+  if(btn) openQualityModal(btn.dataset.qualityMun, btn.dataset.qualityTipo);
 });
 
 
 /* ============================================================================
-   LÓGICA — COMPARATIVO ENTRE VERSÕES
+   LÓGICA — COMPARATIVO ENTRE VERSÕES (por tipo de risco)
    ============================================================================ */
 function compareDelta(beforeStatus, afterStatus){
   if(!(beforeStatus in QSTATUS_SCORE) || !(afterStatus in QSTATUS_SCORE)) return null;
@@ -1002,32 +1107,32 @@ function evolutionLabel(delta){
   return {symbol:"↓↓", cls:"down", text:"Regressão forte"};
 }
 
-function compareStatusForMunicipio(municipio){
-  const versions = municipioVersions(municipio);
+function compareStatusForMunicipio(municipio, tipo){
+  const versions = municipioVersions(municipio, tipo);
   if(versions.length >= 2) return {cls:"ready", label:"Comparável", detail:`${versions.length} versões`};
   if(versions.length === 1) return {cls:"wait", label:"Aguardando nova versão", detail:"1 versão"};
   return {cls:"none", label:"Sem documento recebido", detail:"0 versões"};
 }
 
-function renderCompareCards(){
-  const ready = REDEC.filter(m=>municipioVersions(m).length >= 2).length;
-  const wait = REDEC.filter(m=>municipioVersions(m).length === 1).length;
-  const none = REDEC.filter(m=>municipioVersions(m).length === 0).length;
+function renderCompareCards(tipo){
+  const ready = REDEC.filter(m=>municipioVersions(m, tipo).length >= 2).length;
+  const wait = REDEC.filter(m=>municipioVersions(m, tipo).length === 1).length;
+  const none = REDEC.filter(m=>municipioVersions(m, tipo).length === 0).length;
   document.getElementById("compareCards").innerHTML = `
     <div class="compare-card"><div class="num">${ready}</div><div class="label">municípios comparáveis</div></div>
     <div class="compare-card"><div class="num">${wait}</div><div class="label">aguardando nova versão</div></div>
     <div class="compare-card"><div class="num">${none}</div><div class="label">sem documento inicial</div></div>
   `;
   document.getElementById("compareNote").innerHTML = ready
-    ? `O resumo de evolução considera apenas os <b>${ready}</b> município(s) com duas ou mais versões analisadas.`
-    : `Ainda não há municípios com duas versões analisadas. A análise atual foi preservada como <b>Diagnóstico inicial</b>. Quando um município enviar uma versão revisada, ele passará automaticamente para a situação <b>Comparável</b>.`;
+    ? `O resumo de evolução considera apenas os <b>${ready}</b> município(s) com duas ou mais versões analisadas para ${RISK_TYPES[tipo].label.toLowerCase()}.`
+    : `Ainda não há municípios com duas versões analisadas para ${RISK_TYPES[tipo].label.toLowerCase()}. A análise atual foi preservada como <b>Diagnóstico inicial</b>. Quando um município enviar uma versão revisada, ele passará automaticamente para a situação <b>Comparável</b>.`;
 }
 
-function renderCompareMunicipioStatus(){
+function renderCompareMunicipioStatus(tipo){
   const tbody = document.getElementById("compareMunicipioStatus");
   tbody.innerHTML = REDEC.map(m=>{
-    const versions = municipioVersions(m);
-    const status = compareStatusForMunicipio(m);
+    const versions = municipioVersions(m, tipo);
+    const status = compareStatusForMunicipio(m, tipo);
     const latest = versions.length ? versions[versions.length-1] : null;
     return `<tr>
       <td class="municipio-cell">${m}</td>
@@ -1038,13 +1143,11 @@ function renderCompareMunicipioStatus(){
   }).join("");
 }
 
-function populateCompareSelectors(selectedMunicipio){
+function populateCompareSelectors(selectedMunicipio, tipo){
   const munSel = document.getElementById("compareMunicipio");
-  if(!munSel.options.length){
-    munSel.innerHTML = REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
-  }
+  munSel.innerHTML = REDEC.map(m=>`<option value="${m}">${m}</option>`).join("");
   if(selectedMunicipio) munSel.value = selectedMunicipio;
-  const versions = municipioVersions(munSel.value);
+  const versions = municipioVersions(munSel.value, tipo);
   const opts = versions.map((v,i)=>`<option value="${i}">${v.rotulo} — ${v.dataAnalise}</option>`).join("");
   const beforeSel = document.getElementById("compareBefore");
   const afterSel = document.getElementById("compareAfter");
@@ -1053,21 +1156,22 @@ function populateCompareSelectors(selectedMunicipio){
   beforeSel.disabled = versions.length < 2;
   afterSel.disabled = versions.length < 2;
   if(versions.length >= 2){ beforeSel.value = "0"; afterSel.value = String(versions.length-1); }
-  renderCompareDetail();
+  renderCompareDetail(tipo);
 }
 
-function renderCompareDetail(){
+function renderCompareDetail(tipo){
+  const cfg = RISK_TYPES[tipo];
   const municipio = document.getElementById("compareMunicipio").value;
-  const versions = municipioVersions(municipio);
+  const versions = municipioVersions(municipio, tipo);
   const target = document.getElementById("compareDetail");
 
   if(versions.length === 0){
-    target.innerHTML = `<div class="compare-note"><b>${municipio}</b>: sem documento recebido. Não há baseline nem versão posterior para comparação.</div>`;
+    target.innerHTML = `<div class="compare-note"><b>${municipio}</b>: sem documento recebido para ${cfg.label.toLowerCase()}. Não há baseline nem versão posterior para comparação.</div>`;
     return;
   }
   if(versions.length === 1){
     const v = versions[0];
-    target.innerHTML = `<div class="compare-note"><b>${municipio}</b>: possui apenas a versão <b>${v.rotulo}</b>, analisada em ${v.dataAnalise}. Situação: aguardando nova versão para comparação.</div>`;
+    target.innerHTML = `<div class="compare-note"><b>${municipio}</b>: possui apenas a versão <b>${v.rotulo}</b>, analisada em ${v.dataAnalise}, para ${cfg.label.toLowerCase()}. Situação: aguardando nova versão para comparação.</div>`;
     return;
   }
 
@@ -1079,34 +1183,43 @@ function renderCompareDetail(){
   }
 
   let improved=0, stable=0, regressed=0;
-  const rows = QUALITY_CRITERIA.map(c=>{
+  const rows = cfg.criteria.map(c=>{
     const b = before.criterios[c.id]?.status || "pending";
     const a = after.criterios[c.id]?.status || "pending";
     const delta = compareDelta(b,a);
     const evo = evolutionLabel(delta);
     if(delta > 0) improved++; else if(delta === 0) stable++; else if(delta < 0) regressed++;
     return `<tr>
-      <td><b>C${c.id}</b> — ${c.short}</td>
+      <td><b>${cfg.prefix}${c.id}</b> — ${c.short}</td>
       <td class="compare-cell"><span class="before">${QSTATUS_ICON[b]} ${QSTATUS_LABEL[b]}</span> → <span class="after">${QSTATUS_ICON[a]} ${QSTATUS_LABEL[a]}</span></td>
       <td><span class="evo ${evo.cls}" title="${evo.text}">${evo.symbol}</span></td>
     </tr>`;
   }).join("");
 
   target.innerHTML = `
-    <div class="compare-note"><b>${municipio}</b>: ${before.rotulo} (${before.dataAnalise}) vs ${after.rotulo} (${after.dataAnalise}). Evoluções: <b>${improved}</b> · Estáveis: <b>${stable}</b> · Regressões: <b>${regressed}</b>.</div>
+    <div class="compare-note"><b>${municipio}</b> (${cfg.label}): ${before.rotulo} (${before.dataAnalise}) vs ${after.rotulo} (${after.dataAnalise}). Evoluções: <b>${improved}</b> · Estáveis: <b>${stable}</b> · Regressões: <b>${regressed}</b>.</div>
     <div class="compare-table-wrap"><table class="compare-table">
-      <thead><tr><th>Critério</th><th>Antes → Depois</th><th>Evolução</th></tr></thead>
+      <thead><tr><th>${cfg.prefix === "C" ? "Critério" : "Fator"}</th><th>Antes → Depois</th><th>Evolução</th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
   `;
 }
 
+function setCompareTipo(tipo){
+  riskTipoAtivoCompare = tipo;
+  document.querySelectorAll("#compareRiskTabs .risk-tab").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.tipo===tipo)));
+  renderCompareCards(tipo);
+  renderCompareMunicipioStatus(tipo);
+  populateCompareSelectors(document.getElementById("compareMunicipio").value || REDEC[0], tipo);
+}
+
 function openCompareModal(municipio){
   document.getElementById("compareModalBackdrop").classList.add("open");
   document.body.style.overflow = "hidden";
-  renderCompareCards();
-  renderCompareMunicipioStatus();
-  populateCompareSelectors(municipio || REDEC[0]);
+  renderRiskTabs("compareRiskTabs", riskTipoAtivoCompare, setCompareTipo);
+  renderCompareCards(riskTipoAtivoCompare);
+  renderCompareMunicipioStatus(riskTipoAtivoCompare);
+  populateCompareSelectors(municipio || REDEC[0], riskTipoAtivoCompare);
 }
 function closeCompareModal(){
   document.getElementById("compareModalBackdrop").classList.remove("open");
@@ -1119,9 +1232,9 @@ document.getElementById("compareModalClose").addEventListener("click", closeComp
 document.getElementById("compareModalBackdrop").addEventListener("click", (e)=>{
   if(e.target.id === "compareModalBackdrop") closeCompareModal();
 });
-document.getElementById("compareMunicipio").addEventListener("change", ()=>populateCompareSelectors());
-document.getElementById("compareBefore").addEventListener("change", renderCompareDetail);
-document.getElementById("compareAfter").addEventListener("change", renderCompareDetail);
+document.getElementById("compareMunicipio").addEventListener("change", ()=>populateCompareSelectors(null, riskTipoAtivoCompare));
+document.getElementById("compareBefore").addEventListener("change", ()=>renderCompareDetail(riskTipoAtivoCompare));
+document.getElementById("compareAfter").addEventListener("change", ()=>renderCompareDetail(riskTipoAtivoCompare));
 document.addEventListener("keydown", (e)=>{
   if(e.key === "Escape" && document.getElementById("compareModalBackdrop").classList.contains("open")){
     closeCompareModal();
@@ -1130,16 +1243,20 @@ document.addEventListener("keydown", (e)=>{
 
 function renderPendingAnalysisAlert(){
   const summary = getMunicipioSummary();
-  const pending = REDEC.filter(m => {
-    const st = (summary[m] || {status:"bad"}).status;
-    if(st === "bad") return false; 
-    return !latestQualityData(m);  
+  const parts = [];
+  Object.keys(RISK_TYPES).forEach(tipo=>{
+    const pending = REDEC.filter(m => {
+      const st = (summary[m] || {status:"bad"}).status;
+      if(st === "bad") return false;
+      return !latestQualityData(m, tipo);
+    });
+    if(pending.length) parts.push(`${RISK_TYPES[tipo].shortLabel}: ${pending.join(", ")}`);
   });
   const alert = document.getElementById("pendingAnalysisAlert");
   const txt   = document.getElementById("pendingAnalysisText");
   if(!alert || !txt) return;
-  if(pending.length === 0){ alert.style.display="none"; return; }
-  txt.textContent = `${pending.length} município(s) com plano entregue aguardando análise técnica: ${pending.join(", ")}`;
+  if(parts.length === 0){ alert.style.display="none"; return; }
+  txt.textContent = `Municípios com plano entregue aguardando análise técnica — ${parts.join(" · ")}`;
   alert.style.display = "block";
 }
 
@@ -1161,31 +1278,29 @@ async function carregarDadosDaPlanilha() {
     ALL_DATA = dados.entregas || [];
     recalcAnos();
 
-    // 2. Popula o Histórico de Análises
-    REDEC.forEach(m => QUALITY_HISTORY[m] = []); // Limpa o histórico
-    if(dados.analises) {
-      dados.analises.forEach(a => {
-        if(QUALITY_HISTORY[a.municipio]) {
-          QUALITY_HISTORY[a.municipio].push(a);
+    // 2. Popula o Histórico de Análises, por tipo de risco
+    Object.keys(RISK_TYPES).forEach(tipo=>{
+      const cfg = RISK_TYPES[tipo];
+      cfg.history = {};
+      REDEC.forEach(m => cfg.history[m] = []);
+      const lista = dados[cfg.dataKey] || [];
+      lista.forEach(a => {
+        if(cfg.history[a.municipio]) {
+          cfg.history[a.municipio].push(a);
         }
       });
-      
-      // Garante que o histórico fique ordenado pela data
       REDEC.forEach(m => {
-        QUALITY_HISTORY[m].sort((x, y) => new Date(x.dataAnalise) - new Date(y.dataAnalise));
+        cfg.history[m].sort((x, y) => new Date(x.dataAnalise) - new Date(y.dataAnalise));
       });
-    }
+    });
 
     // 3. Inicialização e Renderização da Interface
     initMap(); 
     setAno(anoAtivo);
+    buildYearBtns();
     
     renderPendingAnalysisAlert();
-    renderCritList();
     renderQualityMeta();
-    renderQualityMatrix();
-    renderCompareCards();
-    renderCompareMunicipioStatus();
 
     // Mensagem de sucesso
     const hora = new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
@@ -1199,6 +1314,7 @@ async function carregarDadosDaPlanilha() {
     recalcAnos();
     initMap();
     setAno(anoAtivo);
+    buildYearBtns();
   }
 }
 
