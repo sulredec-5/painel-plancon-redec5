@@ -836,6 +836,14 @@ function setAno(ano){
   document.querySelector(".pill[data-status='all']").setAttribute("aria-pressed","true");
   document.querySelectorAll(".year-btn").forEach(b=>b.classList.toggle("active", +b.dataset.ano === ano));
   renderStats(); updateMapColors(); initDonut(); renderTable();
+  renderQualityMeta();
+  renderPendingAnalysisAlert();
+  // Se o modal de qualidade estiver aberto, refaz a matriz/drilldown para o novo ano
+  if(document.getElementById("qualityModalBackdrop").classList.contains("open")){
+    closeDrilldown();
+    renderCritList(riskTipoAtivoQuality);
+    renderQualityMatrix(riskTipoAtivoQuality);
+  }
 }
 
 function buildYearBtns(){
@@ -847,21 +855,33 @@ function buildYearBtns(){
    LÓGICA — QUALIDADE DO CONTEÚDO (Matriz e Drilldown, por tipo de risco)
    ============================================================================ */
 function municipioVersions(municipio, tipo){ return RISK_TYPES[tipo].history[municipio] || []; }
-function latestQualityVersion(municipio, tipo){ const v = municipioVersions(municipio, tipo); return v.length ? v[v.length-1] : null; }
-function latestQualityData(municipio, tipo){
-  const v = latestQualityVersion(municipio, tipo);
+// Só considera versões de análise cujo ciclo bate com o ano/ciclo selecionado no topo do painel.
+// Uma análise sem 'ciclo' preenchido (dado antigo) é tratada como pertencente ao ciclo mais recente disponível (ANOS[0]),
+// para não sumir do painel só por falta desse campo — mas o ideal é preencher 'ciclo' em todas as linhas.
+function versoesDoCiclo(municipio, tipo, ano){
+  return municipioVersions(municipio, tipo).filter(v => {
+    const c = v.ciclo ? Number(v.ciclo) : ANOS[0];
+    return c === Number(ano);
+  });
+}
+function latestQualityVersion(municipio, tipo, ano){
+  const v = versoesDoCiclo(municipio, tipo, ano != null ? ano : anoAtivo);
+  return v.length ? v[v.length-1] : null;
+}
+function latestQualityData(municipio, tipo, ano){
+  const v = latestQualityVersion(municipio, tipo, ano);
   if(!v) return null;
   return {analisadoEm:v.dataAnalise, fonte:v.documento, criterios:v.criterios, versaoAnalise:v.id, rotulo:v.rotulo, sintese:v.sintese};
 }
 
-function qualityStatusFor(municipio, critId, tipo){
-  const m = latestQualityData(municipio, tipo);
+function qualityStatusFor(municipio, critId, tipo, ano){
+  const m = latestQualityData(municipio, tipo, ano);
   if(!m || !m.criterios[critId]) return "pending";
   return m.criterios[critId].status;
 }
 
-function municipioQualitySummary(municipio, tipo){
-  const m = latestQualityData(municipio, tipo);
+function municipioQualitySummary(municipio, tipo, ano){
+  const m = latestQualityData(municipio, tipo, ano);
   if(!m) return null;
   const counts = {ok:0, warn:0, bad:0};
   RISK_TYPES[tipo].criteria.forEach(c=>{
