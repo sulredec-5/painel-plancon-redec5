@@ -480,6 +480,7 @@ const RISK_TYPES = {
     shortLabel: "Chuvas",
     prefix: "C",
     dataKey: "analises",
+    riscoKeywords: ["geral", "chuva"],
     history: {},
     criteria: [
       {id:1, short:"Responsabilidades por órgão", full:"Indicação das responsabilidades de cada órgão na gestão de desastres, especialmente quanto às ações de preparação, resposta e recuperação."},
@@ -497,6 +498,7 @@ const RISK_TYPES = {
     shortLabel: "Estiagem/Fogo",
     prefix: "FV",
     dataKey: "analisesEstiagem",
+    riscoKeywords: ["geral", "estiagem", "seca", "escassez", "fogo", "incendio", "incêndio", "vegetacao", "vegetação", "el nino", "el niño", "calor", "umidade"],
     history: {},
     criteria: [
       {id:1, short:"Fenômeno El Niño", full:"Procedimentos e ações voltados ao enfrentamento dos impactos decorrentes do fenômeno El Niño."},
@@ -1241,15 +1243,23 @@ document.addEventListener("keydown", (e)=>{
   }
 });
 
+function normalizarTexto(s){
+  return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+
+// Um município só "aguarda análise" de um tipo de risco se tiver, de fato,
+// um documento entregue (status != bad) cujo campo 'risco' cubra esse tipo
+// (um plano "Geral" cobre todos os tipos; um plano rotulado por tipo cobre só o seu).
+function municipioTemDocumentoParaTipo(municipio, tipo){
+  const kws = RISK_TYPES[tipo].riscoKeywords || [];
+  return DATA.some(d => d.municipio === municipio && d.status !== "bad" &&
+    kws.some(k => normalizarTexto(d.risco).includes(normalizarTexto(k))));
+}
+
 function renderPendingAnalysisAlert(){
-  const summary = getMunicipioSummary();
   const parts = [];
   Object.keys(RISK_TYPES).forEach(tipo=>{
-    const pending = REDEC.filter(m => {
-      const st = (summary[m] || {status:"bad"}).status;
-      if(st === "bad") return false;
-      return !latestQualityData(m, tipo);
-    });
+    const pending = REDEC.filter(m => municipioTemDocumentoParaTipo(m, tipo) && !latestQualityData(m, tipo));
     if(pending.length) parts.push(`${RISK_TYPES[tipo].shortLabel}: ${pending.join(", ")}`);
   });
   const alert = document.getElementById("pendingAnalysisAlert");
